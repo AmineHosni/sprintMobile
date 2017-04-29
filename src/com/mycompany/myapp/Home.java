@@ -78,7 +78,7 @@ public class Home {
         new Search().start(txtSearch.getText());
         
         });
-        hi.getToolbar().addCommandToRightBar("", maskedImage, e -> {});
+        hi.getToolbar().addCommandToRightBar("", maskedImage.scaled(50, 50), e -> {});
 
         cont.add(txtSearch);
 
@@ -97,7 +97,6 @@ public class Home {
         //Lister categorie
         ConnectionRequest con = new ConnectionRequest();
         con.setUrl("http://localhost/pidev2017/select.php");
-        ArrayList<Categorie> categorie2;
         con.addResponseListener(new ActionListener<NetworkEvent>() {
             Container LesProduits = new Container(new BoxLayout(BoxLayout.X_AXIS));
 

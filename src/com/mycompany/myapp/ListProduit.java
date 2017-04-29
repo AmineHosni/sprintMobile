@@ -91,7 +91,7 @@ public class ListProduit {
                     try {
                         Container containerProduit = new Container(new BoxLayout(BoxLayout.Y_AXIS));
                         EncodedImage placeholder = EncodedImage.createFromImage(Image.createImage("/error.jpg"), false);
-                        Image image = URLImage.createToStorage(placeholder, "magasin+" + "/" + produit.getImageName(), "http://localhost/pidev2017/image/" + "/" + produit.getImageName());
+                        Image image = URLImage.createToStorage(placeholder, produit.getImageName(), "http://localhost/pidev2017/image/" + "/" + produit.getImageName());
                         containerProduit.add(image.scaled(100, 100));
                         Container detailsContainer = new Container(new BoxLayout(BoxLayout.Y_AXIS));
                         detailsContainer.add(new Label(produit.getLibelle()));

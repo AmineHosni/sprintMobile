@@ -54,7 +54,7 @@ public class habchkleu {
 
         } catch (IOException ex) {
         }
-        if (connecter==false) {
+        if (connecter) {
             Container c = new Container(new BoxLayout(BoxLayout.X_AXIS));
             
             c.add(maskedImage);

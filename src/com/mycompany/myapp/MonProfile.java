@@ -108,6 +108,8 @@ public class MonProfile {
                 ).add(BorderLayout.EAST, label3)//,GridLayout.encloseIn(2, remainingTasks, completedTasks)
         );
         FloatingActionButton fab = FloatingActionButton.createFAB(FontImage.MATERIAL_ADD);
+        fab.bindFabToContainer(MonProfile.getContentPane());
+
         fab.getAllStyles().setMarginUnit(Style.UNIT_TYPE_PIXELS);
         fab.getAllStyles().setMargin(BOTTOM, completedTasks.getPreferredH() - fab.getPreferredH() / 2);
         fab.addActionListener(e -> {
@@ -121,9 +123,7 @@ public class MonProfile {
                 trans.setUIID("Container");
                 c1.setUIID("Container");
                 Style c1s = c1.getAllStyles();
-               
                 c1s.setMarginUnit(Style.UNIT_TYPE_DIPS);
-
                 c1s.setMarginBottom(16);
                 c1s.setMarginLeft(12);
                 c1s.setMarginRight(3);
@@ -137,13 +137,12 @@ public class MonProfile {
                 popup.setDisposeWhenPointerOutOfBounds(true);
             int t = MonProfile.getTintColor();
             MonProfile.setTintColor(0);
-            popup.showPopupDialog(new Rectangle(fab.getWidth()- 5, fab.getHeight() - 5, 03, 03));
+            popup.showPopupDialog(new Rectangle(MonProfile.getWidth() - 20, MonProfile.getHeight() - 15, 10, 10));
           
             MonProfile.setTintColor(t);
             } catch (IOException ex) {
             }
         });
-        tb.setTitleComponent(fab.bindFabToContainer(titleCmp, 160, 100));
         ConnectionRequest con = new ConnectionRequest();
         con.setUrl("http://localhost/pidev2017/select.php");
         con.addResponseListener(new ActionListener<NetworkEvent>() {

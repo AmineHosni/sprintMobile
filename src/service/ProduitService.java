@@ -10,6 +10,8 @@ import com.codename1.io.JSONParser;
 import Entities.Produit;
 import com.codename1.io.ConnectionRequest;
 import com.codename1.io.NetworkManager;
+import com.codename1.l10n.ParseException;
+import com.codename1.l10n.SimpleDateFormat;
 import com.codename1.ui.Display;
 import com.codename1.ui.EncodedImage;
 import com.codename1.ui.Image;
@@ -17,6 +19,7 @@ import com.codename1.ui.URLImage;
 import com.codename1.ui.list.DefaultListModel;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +29,7 @@ import java.util.Map;
  */
 public class ProduitService {
 
-    public ArrayList<Produit> getListProduits(String json) {
+    public ArrayList<Produit> getListProduits(String json)  {
         ArrayList<Produit> listEtudiants = new ArrayList<>();
 
         try {
@@ -43,6 +46,13 @@ public class ProduitService {
                 produit.setImageName(obj.get("image_name").toString());
                 produit.setPrixProduit(Double.parseDouble(obj.get("prixProduit").toString()));
                 produit.setLibelle(obj.get("libelle").toString());
+                
+                String dateStr = obj.get("created_date").toString();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date createdDate = sdf.parse(dateStr);
+                  produit.setCreatedDate(createdDate);
+                
+                
                 produit.setDescription(obj.get("description").toString());
                 produit.setSeller(Integer.parseInt(obj.get("seller").toString()));
                 listEtudiants.add(produit);
@@ -50,7 +60,7 @@ public class ProduitService {
             }
 
         } catch (IOException ex) {
-        }
+        } catch (ParseException ex) { }
         return listEtudiants;
 
     }

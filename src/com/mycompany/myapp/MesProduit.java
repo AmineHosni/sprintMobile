@@ -69,7 +69,6 @@ public class MesProduit {
                             new AfficherProduit().start(produit.getId(),true);
                         });
                         b.setHidden(true);
-                        
                         container.add(b);
                         container.setLeadComponent(b);
                         hi.add(container);

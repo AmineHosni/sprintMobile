@@ -1,8 +1,6 @@
 package com.mycompany.myapp;
 
-import Entities.Categorie;
 import Entities.Produit;
-import com.codename1.charts.compat.Paint;
 import com.codename1.io.ConnectionRequest;
 import com.codename1.ui.Form;
 import com.codename1.ui.Label;
@@ -10,7 +8,10 @@ import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.util.Resources;
 import com.codename1.io.NetworkEvent;
 import com.codename1.io.NetworkManager;
+import com.codename1.l10n.ParseException;
+import com.codename1.l10n.SimpleDateFormat;
 import com.codename1.ui.Button;
+import com.codename1.ui.Calendar;
 import com.codename1.ui.Container;
 import com.codename1.ui.EncodedImage;
 import com.codename1.ui.FontImage;
@@ -20,10 +21,10 @@ import com.codename1.ui.TextField;
 import com.codename1.ui.Toolbar;
 import com.codename1.ui.URLImage;
 import com.codename1.ui.events.ActionListener;
-import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.layouts.BoxLayout;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import service.ProduitService;
 import service.habchkleu;
 
@@ -34,6 +35,7 @@ import service.habchkleu;
 public class Home {
 
     private Resources theme;
+
     public void init(Object context) {
         theme = UIManager.initFirstTheme("/theme");
 
@@ -42,12 +44,11 @@ public class Home {
     }
 
     public void start() {
-        
 
         Form hi = new Form();
         Image maskedImage = null;
         try {
-            
+
             Image profilePic = Image.createImage("/lana.jpg");
             //form.addComponent(label1);
             int w = profilePic.getWidth();
@@ -61,38 +62,34 @@ public class Home {
             g.fillArc(0, 0, w, h, 0, 360);
 
             Object mask = maskImage.createMask();
-            
-              maskedImage= profilePic.applyMask(mask);
+
+            maskedImage = profilePic.applyMask(mask);
 
         } catch (IOException ex) {
         }
-        
+
         hi.setLayout(new BoxLayout(BoxLayout.Y_AXIS));
         TextField txtSearch = new TextField();
         Container cont = new Container(new BoxLayout(BoxLayout.X_AXIS));
-        
+
         hi.getToolbar();
         txtSearch.setHint("Search Produit");
-        
+
         hi.getToolbar().addMaterialCommandToRightBar("", FontImage.MATERIAL_SEARCH, e -> {
-        new Search().start(txtSearch.getText());
-        
+            new Search().start(txtSearch.getText());
+
         });
-        hi.getToolbar().addCommandToRightBar("", maskedImage.scaled(50, 50), e -> {});
+        hi.getToolbar().addCommandToRightBar("", maskedImage.scaled(50, 50), e -> {
+        });
 
         cont.add(txtSearch);
 
-    
-    
         cont.setScrollableX(false);
         cont.setScrollableY(false);
         hi.add(cont);
-        hi.add(new Label("Les Produits"));
-        
+
         //Button group
-        
-        
-        new habchkleu().insertHabchkleu(hi,false);
+        new habchkleu().insertHabchkleu(hi, false);
         hi.show();
         //Lister categorie
         ConnectionRequest con = new ConnectionRequest();
@@ -102,35 +99,50 @@ public class Home {
 
             @Override
             public void actionPerformed(NetworkEvent evt) {
-
+                
+                Label LesNouveauxProduits = new Label("Les Nouveaux Produits");
+                Container a = new Container();
+                a.add(LesNouveauxProduits);
+                Button btnLesNouveauxProduits = new Button();
+                btnLesNouveauxProduits.addActionListener(e->{
+                    System.out.println("sss");
+                });
+                a.add(btnLesNouveauxProduits);
+                a.setLeadComponent(btnLesNouveauxProduits);
+                btnLesNouveauxProduits.setHidden(true);
+                hi.add(a);
                 LesProduits.setScrollableX(true);
                 LesProduits.setScrollableY(false);
                 ArrayList<Produit> produits = new ProduitService().getListProduits(new String(con.getResponseData()));
-                int size = produits.size();
-               
+                
+                
+                
                 for (Produit produit : produits) {
-                    
-                    try {
-                        Container containerProduit = new Container(new BoxLayout(BoxLayout.Y_AXIS));
-                        EncodedImage placeholder = EncodedImage.createFromImage(Image.createImage("/error.jpg"), false);
-                        Image image = URLImage.createToStorage(placeholder, "magasin+" + "/" + produit.getImageName(), "http://localhost/pidev2017/image/" + "/" + produit.getImageName());
-                        containerProduit.add(image.scaled(100, 100));
-                        Container detailsContainer = new Container(new BoxLayout(BoxLayout.Y_AXIS));
-                        detailsContainer.add(new Label(produit.getLibelle()));
-                        detailsContainer.add(produit.getPrixProduit().toString());
-                        containerProduit.add(detailsContainer);
-                        Button b = new Button(produit.getLibelle());
-                        b.addActionListener(e -> {
-                            new AfficherProduit().start(produit.getId(), false);
-                        });
-                        b.setHidden(true);
-                        containerProduit.add(b);
-                        containerProduit.setLeadComponent(b);
-                        LesProduits.add(containerProduit);
-
-                    } catch (IOException ex) {
+                    System.out.println(produit.getCreatedDate());
+                            try {
+                                
+                                Container containerProduit = new Container(new BoxLayout(BoxLayout.Y_AXIS));
+                                EncodedImage placeholder = EncodedImage.createFromImage(Image.createImage("/error.jpg"), false);
+                                Image image = URLImage.createToStorage(placeholder, "magasin+" + "/" + produit.getImageName(), "http://localhost/pidev2017/image/" + "/" + produit.getImageName());
+                                containerProduit.add(image.scaled(100, 100));
+                                Container detailsContainer = new Container(new BoxLayout(BoxLayout.Y_AXIS));
+                                detailsContainer.add(new Label(produit.getLibelle()));
+                                detailsContainer.add(produit.getPrixProduit().toString());
+                                containerProduit.add(detailsContainer);
+                                Button b = new Button(produit.getLibelle());
+                                b.addActionListener(e -> {
+                                    new AfficherProduit().start(produit.getId(), false);
+                                });
+                                b.setHidden(true);
+                                containerProduit.add(b);
+                                containerProduit.setLeadComponent(b);
+                                LesProduits.add(containerProduit);
+                                
+                            } catch (IOException ex) {
                     }
-                }
+                      
+                    }
+                
                 hi.add(LesProduits);
                 hi.refreshTheme();
             }
@@ -138,8 +150,6 @@ public class Home {
         NetworkManager.getInstance().addToQueue(con);
 
     }
-
-   
 
     public void destroy() {
     }

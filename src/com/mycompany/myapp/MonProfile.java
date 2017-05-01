@@ -143,39 +143,40 @@ public class MonProfile {
             } catch (IOException ex) {
             }
         });
-        ConnectionRequest con = new ConnectionRequest();
-        con.setUrl("http://localhost/pidev2017/select.php");
-        con.addResponseListener(new ActionListener<NetworkEvent>() {
-            @Override
-            public void actionPerformed(NetworkEvent evt) {
-                ArrayList<Produit> produits = new ProduitService().getListProduits(new String(con.getResponseData()));
-                for(Produit produit : produits) {
-                    if (produit.getSeller()==9) {
-                        try {
-                        Container container = new Container(new FlowLayout());
-                        container.add(new Label(Image.createImage("/frigi.png").scaled(46, 46)));
-                        Container detailsContainer = new Container(new BoxLayout(2));
-                        detailsContainer.add(new Label(produit.getLibelle()));
-                        detailsContainer.add(produit.getPrixProduit().toString());
-                        container.add(detailsContainer);
-                        Button b = new Button(produit.getLibelle());
-                        b.addActionListener(e -> {
-                            new AfficherProduit().start(produit.getId(),true);
-                        });
-                        b.setHidden(true);
-                        
-                        container.add(b);
-                        container.setLeadComponent(b);
-                        MonProfile.add(container);
-                    } catch (IOException ex) {
-                    }
-                    }
-                    
-                }
-                MonProfile.refreshTheme();
-            }
-        });
-        NetworkManager.getInstance().addToQueue(con);
+//        ConnectionRequest con = new ConnectionRequest();
+//        con.setUrl("http://localhost/pidev2017/select.php");
+//        con.addResponseListener(new ActionListener<NetworkEvent>() {
+//            @Override
+//            public void actionPerformed(NetworkEvent evt) {
+//                ArrayList<Produit> produits = new ProduitService().getListProduits(new String(con.getResponseData()));
+//                for(Produit produit : produits) {
+//                    if (produit.getSeller()==9) {
+//                        try {
+//                        Container container = new Container(new FlowLayout());
+//                        container.add(new Label(Image.createImage("/frigi.png").scaled(46, 46)));
+//                        Container detailsContainer = new Container(new BoxLayout(2));
+//                        detailsContainer.add(new Label(produit.getLibelle()));
+//                        detailsContainer.add(produit.getPrixProduit().toString());
+//                        container.add(detailsContainer);
+//                        Button b = new Button(produit.getLibelle());
+//                        b.addActionListener(e -> {
+//                            new AfficherProduit().start(produit.getId(),true);
+//                        });
+//                        b.setHidden(true);
+//                        
+//                        container.add(b);
+//                        container.setLeadComponent(b);
+//                        MonProfile.add(container);
+//                    } catch (IOException ex) {
+//                    }
+//                    }
+//                    
+//                }
+//                MonProfile.refreshTheme();
+//            }
+// NetworkManager.getInstance().addToQueue(con);
+//        });
+       
         MonProfile.show();
     }
 

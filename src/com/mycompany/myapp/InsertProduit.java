@@ -21,6 +21,8 @@ import com.codename1.ui.Form;
 import com.codename1.ui.Label;
 import com.codename1.ui.TextField;
 import com.codename1.ui.Toolbar;
+import com.codename1.ui.events.ActionEvent;
+import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.plaf.UIManager;
@@ -36,10 +38,12 @@ import service.habchkleu;
  */
 public class InsertProduit {
 
+    String imageName;
     Form current;
-MultipartRequest cr;
+    MultipartRequest cr = null;
+
     private Resources theme;
-    String libelle, description, etat, duree, image_name, image_name2, image_name3, created_date, marque;
+    String libelle, description, etat, duree, created_date, marque;
     Double prixProduit;
     Integer quantiteStock, pourcentagePromotion, seller;
 
@@ -55,7 +59,7 @@ MultipartRequest cr;
             return;
         }
         Form formAffiche = new Form(new BorderLayout());
-        new habchkleu().insertHabchkleu(formAffiche,false);
+        new habchkleu().insertHabchkleu(formAffiche, false);
         TextField txtlibelle = new TextField();
         txtlibelle.setHint("Libelle");
 
@@ -107,88 +111,87 @@ MultipartRequest cr;
         formAffiche.add(BorderLayout.SOUTH, btnAjouter);
         formAffiche.show();
         ConnectionRequest con = new ConnectionRequest();
-        btnAjouterPhoto.addActionListener(e -> {
 
-            try {
-                 cr = new MultipartRequest();
-                String filePath = Capture.capturePhoto(Display.getInstance().getDisplayWidth(), -1);
-                cr.setUrl("http://localhost/pidev2017/addimage.php");
-                cr.setPost(true);
-                String mime = "image/jpeg";
-                if (cr != null) {
+        btnAjouter.addActionListener(e -> {
 
-                    cr.addData("file", filePath, mime);
-                    cr.setFilename("file", "MyImage.jpg");//any unique name you want                
-                    InfiniteProgress prog = new InfiniteProgress();
-                    NetworkManager.getInstance().addToQueueAndWait(cr);
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = new Date();
+            String datenow = new String(dateFormat.format(date));
+            boolean controledesaisie = false;
+            if (txtlibelle.getText().equals("")) {
+                Dialog.show(null, " Ajouter votre Libelle ", "ok", null);
+            } else if (txtDescription.getText().equals("")) {
+                Dialog.show(null, " Ajouter votre Description ", "ok", null);
+            } else if (prix.getValue() == 0) {
+                Dialog.show(null, " Ajouter votre Prix ", "ok", null);
+            } else if (txtmarque.getText().equals("")) {
+                Dialog.show(null, " Ajouter votre marque ", "ok", null);
+            } else if (stock.getValue() == 0) {
+                Dialog.show(null, " Ajouter votre Stock ", "ok", null);
+            } else if (cr == null) {
 
-                }
-            } catch (IOException ex) {
-            }
+                Dialog.show(null, " Ajouter votre Photo ", "ok", null);
 
-        });
-        btnAjouterPhoto.addActionListener(ee -> {
-            String filePath = null;
-
-            try {
-                MultipartRequest cr = new MultipartRequest();
-                filePath = Capture.capturePhoto(Display.getInstance().getDisplayWidth(), -1);
-                cr.setUrl("http://localhost/pidev2017/addimage.php");
-                cr.setPost(true);
-                String mime = "image/jpeg";
-                cr.addData("file", filePath, mime);
-                cr.setFilename("file", "MyImage.jpg");//any unique name you want                
-                System.out.println(filePath);
-                Dialog.show(null, " Ajouter une image", "ok", null);
-                if (filePath == null) {
-
-                    btnAjouter.addActionListener(e -> {
-                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                        Date date = new Date();
-                        String datenow = new String(dateFormat.format(date));
-                        boolean controledesaisie = false;
-                        if (txtlibelle.getText().equals("")) {
-                            Dialog.show(null, " Ajouter votre Libelle ", "ok", null);
-                        } else if (txtDescription.getText().equals("")) {
-                            Dialog.show(null, " Ajouter votre Description ", "ok", null);
-                        } else if (prix.getValue() == 0) {
-                            Dialog.show(null, " Ajouter votre Prix ", "ok", null);
-                        } else if (txtmarque.getText().equals("")) {
-                            Dialog.show(null, " Ajouter votre marque ", "ok", null);
-                        } else if (stock.getValue() == 0) {
-                            Dialog.show(null, " Ajouter votre Stock ", "ok", null);
-                        } else {
-                            Dialog.show(null, " Ajouter votre Image ", "ok", null);
-
-                        }
-
-                    });
+            } else {
+                String duree;
+                if (comboDuree.getSelectedItem() == "15 jours") {
+                    duree = "15";
+                } else if (comboDuree.getSelectedItem() == "30 jours") {
+                    duree = "30";
                 } else {
-                    NetworkManager.getInstance().addToQueueAndWait(cr);
-                    System.out.println(filePath);
-                    NetworkManager.getInstance().addToQueue(con);
-                    new ListProduit().start();
-
+                    duree = "45";
                 }
-            } catch (IOException ex) {
+
+                con.setUrl("http://localhost/pidev2017/insert.php?"
+                        + "libelle=" + txtlibelle.getText()
+                        + "&description=" + txtDescription.getText()
+                        + "&marque=" + txtmarque.getText()
+                        + "&etat=" + comboEtat.getSelectedItem()
+                        + "&prixProduit=" + prix.getValue()
+                        + "&quantiteStock=" + stock.getValue()
+                        + "&created_date=" + datenow
+                        + "&duree=" + duree
+                        + "&pourcentagePromotion=" + pourcentagePromotion
+                        + "&image_name=" + imageName
+                        + "&image_name2=" + imageName
+                        + "&image_name3=" + imageName
+                        + "&seller=" + 9);
+                NetworkManager.getInstance().addToQueue(con);
+                new ListProduit().start();
+
             }
 
-//                con.setUrl("http://localhost/pidev2017/insert.php?"
-//                        + "libelle=" + txtlibelle.getText()
-//                        + "&description=" + txtDescription.getText()
-//                        + "&marque=" + txtmarque.getText()
-//                        + "&etat=" + comboEtat.getSelectedItem()
-//                        + "&prixProduit=" + prix.getValue()
-//                        + "&quantiteStock=" + stock.getValue()
-//                        + "&created_date=" + datenow
-//                        + "&duree=" + comboDuree.getSelectedItem()
-//                        + "&pourcentagePromotion=" + pourcentagePromotion
-//                        + "&image_name=" + image_name
-//                        + "&image_name2=" + image_name2
-//                        + "&image_name3=" + image_name3
-//                        + "&seller=" + 9);
         });
 
+        btnAjouterPhoto.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    MultipartRequest mr = new MultipartRequest();
+                    String filePath = Capture.capturePhoto(Display.getInstance().getDisplayWidth(), -1);
+                    mr.setUrl("http://localhost/pidev2017/addimage.php");
+                    mr.setPost(true);
+                    String mime = "image/jpeg";
+                    if (filePath != null) {
+                        mr.addData("file", filePath, mime);
+                        System.out.println(filePath);
+                        mr.setFilename("file", filePath);//any unique name you want
+                        imageName = filePath;
+                        int index = imageName.lastIndexOf("/");
+                        imageName = imageName.substring(index + 1);
+                        InfiniteProgress prog = new InfiniteProgress();
+                        Dialog dlg = prog.showInifiniteBlocking();
+                        mr.setDisposeOnCompletion(dlg);
+                        NetworkManager.getInstance().addToQueueAndWait(mr);
+                        cr=mr;
+                    }
+
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+        });
     }
 
 }

@@ -46,7 +46,7 @@ public class ProduitService {
                 produit.setImageName(obj.get("image_name").toString());
                 produit.setPrixProduit(Double.parseDouble(obj.get("prixProduit").toString()));
                 produit.setLibelle(obj.get("libelle").toString());
-                
+                produit.setQuantiteStock(Integer.parseInt(obj.get("quantiteStock").toString()));
                 String dateStr = obj.get("created_date").toString();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 Date createdDate = sdf.parse(dateStr);
@@ -85,6 +85,9 @@ public class ProduitService {
                     produit.setPrixProduit(Double.parseDouble(obj.get("prixProduit").toString()));
                     produit.setLibelle(obj.get("libelle").toString());
                     produit.setDescription(obj.get("description").toString());
+                    produit.setQuantiteStock(Integer.parseInt(obj.get("quantiteStock").toString()));
+                    System.out.println(produit.getProduitCategorie());
+                    produit.setProduitCategorie(Integer.parseInt(obj.get("produitCategorie").toString()));
                 }
 
             }

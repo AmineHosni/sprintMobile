@@ -18,7 +18,6 @@ import com.codename1.ui.plaf.Style;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.util.Resources;
 import com.mycompany.myapp.Home;
-import com.mycompany.myapp.ListProduit;
 import com.mycompany.myapp.Login;
 import com.mycompany.myapp.MonProfile;
 import java.io.IOException;

@@ -12,13 +12,10 @@ import com.codename1.io.NetworkEvent;
 import com.codename1.io.NetworkManager;
 import com.codename1.ui.Button;
 import com.codename1.ui.Container;
-import com.codename1.ui.Display;
 import com.codename1.ui.Form;
 import com.codename1.ui.Label;
 import com.codename1.ui.Toolbar;
 import com.codename1.ui.events.ActionListener;
-import com.codename1.ui.geom.Dimension;
-import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.util.Resources;
@@ -31,21 +28,18 @@ import service.habchkleu;
  */
 public class AfficherProduit {
 
-    
-    
     private Resources theme;
 
     public void init(Object context) {
         theme = UIManager.initFirstTheme("/theme");
         Toolbar.setGlobalToolbar(true);
-        
+
     }
 
-    public void start(Integer id,boolean isconnceted) {
-        
-       Form formAffiche = new Form(new BoxLayout(2));
-             new habchkleu().insertHabchkleu(formAffiche,false);
+    public void start(Integer id, boolean isconnceted) {
 
+        Form formAffiche = new Form(new BoxLayout(2));
+        new habchkleu().insertHabchkleu(formAffiche, false);
 
         ConnectionRequest con = new ConnectionRequest();
         con.setUrl("http://localhost/pidev2017/select.php");
@@ -53,43 +47,72 @@ public class AfficherProduit {
             @Override
             public void actionPerformed(NetworkEvent evt) {
                 Produit produit = new ProduitService().getProduit(new String(con.getResponseData()), id);
-                Container container = new Container();
-                Container container2 = new Container();
-                Container container4 = new Container(new BoxLayout(BoxLayout.Y_AXIS));
-                Container container5 = new Container(new BoxLayout(BoxLayout.X_AXIS));
+                
+                Container detailssup = BoxLayout.encloseY(
+                        
+                        new Label(produit.getMarque()),
+                        new Label(produit.getLibelle()+" : "+produit.getDescription())
+                
+                
+                
+                
+                );
+                Container containerImage = new Container();
                 ImageViewer img = new ImageViewer();
                 img.setImageList(new ProduitService().listerImages(produit));
-                container.add(img);
+                containerImage.add(img);
                 
-                container2.setLayout(new BoxLayout(BoxLayout.Y_AXIS));
-                container4.add(new Label("Libelle"));
-                container4.add(new Label(produit.getLibelle()));
-                container5.add(new Label("Description"));
-                container5.add(new Label(produit.getDescription()));
-                container2.add(container4);
-                container2.add(container5);
-                Container container6 = new Container(new BorderLayout());
-                container6.add(BorderLayout.CENTER,container2);
-              
+                Container container2 = new Container();
+                    
+                container2.setLayout(new BoxLayout(BoxLayout.Y_AXIS));  
+               
+                Container container6 = BoxLayout.encloseY(
                 
-                formAffiche.add(container);
+                BoxLayout.encloseX(
+                new Label("Prix : "),
+                        new Label(produit.getPrixProduit().toString())
+                ),
+                BoxLayout.encloseX(
+                new Label("Etat : "),
+                        new Label(produit.getEtat())
+                ),
+                BoxLayout.encloseX(
+                new Label("Categorie : "),
+                        new Label(String.valueOf(produit.getProduitCategorie()))
+                )        
+                
+                );
+                if (produit.getQuantiteStock()!=0) {
+                    container6.add(BoxLayout.encloseX(
+                    new Label("Stock : Disponible")
+                    ));
+                }else container6.add(BoxLayout.encloseX(
+                    new Label("Stock : Indisponible","WelcomeRed")
+                    ));
+                
+                formAffiche.add(detailssup);
+                formAffiche.add(containerImage);
                 formAffiche.add(container6);
-                   if (isconnceted==true) {
+                System.out.println(produit.getQuantiteStock());
+                if (isconnceted == true) {
 
                     Button btnSupprimer = new Button("Supprimer");
-                    formAffiche.add(btnSupprimer);
 
-                    btnSupprimer.addActionListener(e->{
-                    new ProduitService().delete(produit.getId());
-                    new ListProduit().start();
-                    System.out.println("connecter");
+                    btnSupprimer.addActionListener(e -> {
+                        new ProduitService().delete(produit.getId());
+                        new ListProduit().start();
 
-                });
+                    });
+                    Button btnModifier = new Button("Modifier");
+                    btnModifier.addActionListener(e -> new modifierProduit().start(produit));
+
+                    Container boutons = BoxLayout.encloseX(btnModifier, btnSupprimer);
+                    formAffiche.add(boutons);
                 }
-                           formAffiche.show();
+                formAffiche.show();
             }
         });
         NetworkManager.getInstance().addToQueue(con);
-        }
+    }
 
 }

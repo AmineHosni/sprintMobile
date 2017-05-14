@@ -32,7 +32,6 @@ import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.layouts.GridLayout;
 import com.codename1.ui.plaf.Style;
 import com.codename1.ui.plaf.UIManager;
-import com.codename1.ui.util.Resources;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;

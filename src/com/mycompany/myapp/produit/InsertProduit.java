@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.myapp;
+package com.mycompany.myapp.produit;
 
+import Entities.Categorie;
 import com.codename1.capture.Capture;
 import com.codename1.components.InfiniteProgress;
 import com.codename1.io.ConnectionRequest;
 import com.codename1.io.MultipartRequest;
+import com.codename1.io.NetworkEvent;
 import com.codename1.io.NetworkManager;
 import com.codename1.l10n.DateFormat;
 import com.codename1.l10n.SimpleDateFormat;
@@ -29,15 +31,17 @@ import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.spinner.NumericSpinner;
 import com.codename1.ui.util.Resources;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
-import service.habchkleu;
+import service.CategorieService;
+import service.ToolbarSideMenu;
 
 /**
  *
  * @author MBM info
  */
 public class InsertProduit {
-
+    
     String imageName;
     Form current;
     MultipartRequest cr = null;
@@ -59,7 +63,7 @@ public class InsertProduit {
             return;
         }
         Form formAffiche = new Form(new BorderLayout());
-        new habchkleu().insertHabchkleu(formAffiche, false);
+        new ToolbarSideMenu().insertSetting(formAffiche, false);
         TextField txtlibelle = new TextField();
         txtlibelle.setHint("Libelle");
 
@@ -71,7 +75,8 @@ public class InsertProduit {
 
         Button btnAjouterPhoto = new Button("Photo");
 
-        ComboBox<String> comboEtat, comboDuree, chCategorie;
+        ComboBox<String> comboEtat, comboDuree;
+        ComboBox<String> chCategorie = new ComboBox<>();
         comboEtat = new ComboBox<>(
                 "nouveau",
                 "occasion"
@@ -105,7 +110,25 @@ public class InsertProduit {
         n.add(txtmarque);
         n.add(comboEtat);
         n.add(comboDuree);
-        n.add(btnAjouterPhoto);
+        ConnectionRequest concategorie = new ConnectionRequest();
+        concategorie.setUrl("http://localhost/pidev2017/produit/produit/selectcategorie.php");
+        concategorie.addResponseListener(new ActionListener<NetworkEvent>() {
+            @Override
+            public void actionPerformed(NetworkEvent evt) {
+                        ArrayList<Categorie> list = new ArrayList<>();
+                        list = new CategorieService().getListCategorie(new String(concategorie.getResponseData()));
+                        for (Categorie categorie : list) {
+                           chCategorie.addItem(categorie.getNomCategorie());
+                }
+                        n.add(chCategorie);
+            }
+        
+        
+        });
+         NetworkManager.getInstance().addToQueue(concategorie);
+        
+         
+         n.add(btnAjouterPhoto);
         n.setScrollableY(true);
         formAffiche.add(BorderLayout.CENTER, n);
         formAffiche.add(BorderLayout.SOUTH, btnAjouter);
@@ -155,7 +178,9 @@ public class InsertProduit {
                         + "&image_name=" + imageName
                         + "&image_name2=" + imageName
                         + "&image_name3=" + imageName
-                        + "&seller=" + 9);
+                        + "&seller=" + 9
+                );
+                
                 NetworkManager.getInstance().addToQueue(con);
                 new ListProduit().start();
 
@@ -163,6 +188,7 @@ public class InsertProduit {
 
         });
 
+       
         btnAjouterPhoto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -192,6 +218,8 @@ public class InsertProduit {
             }
 
         });
+    
     }
+    
 
 }

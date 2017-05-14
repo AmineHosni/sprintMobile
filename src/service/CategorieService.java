@@ -23,25 +23,9 @@ import java.util.Map;
  * @author MBM info
  */
 public class CategorieService {
-
-
+Categorie i = null;
     public void start() {
-
-        ConnectionRequest con = new ConnectionRequest();
-        con.setUrl("http://localhost/pidev2017/selectcategorie.php");
-        con.addResponseListener(new ActionListener<NetworkEvent>() {
-            @Override
-            public void actionPerformed(NetworkEvent evt) {
-                        ArrayList<Categorie> listCategories = new ArrayList<>();
-
-                        listCategories = getListCategorie(new String(con.getResponseData()));
-        System.out.println("aaa"+listCategories);
-
-            }
-        });
-        NetworkManager.getInstance().addToQueue(con);
-
-
+        returnId("Lunettes");
     }
 
     public ArrayList<Categorie> getListCategorie(String json) {
@@ -64,6 +48,37 @@ public class CategorieService {
         } catch (IOException ex) {
         }
         return listCategories;
+
+    }
+
+    public Categorie returnId(String s) {
+     
+        ConnectionRequest concategorie = new ConnectionRequest();
+        concategorie.setUrl("http://localhost/pidev2017/selectcategorie.php");
+        concategorie.addResponseListener(new ActionListener<NetworkEvent>() {
+            @Override
+            public void actionPerformed(NetworkEvent evt) {
+                
+                ArrayList<Categorie> list = new ArrayList<>();
+                list = new CategorieService().getListCategorie(new String(concategorie.getResponseData()));
+                Categorie cr;
+                for (Categorie categorie : list) {
+                    System.out.println(categorie.getId());
+                    if (categorie.getNomCategorie() == s) {
+                        
+                        cr = categorie;
+                    
+                    i=cr;
+                    }
+                }
+                
+
+            }
+
+        });
+        NetworkManager.getInstance().addToQueue(concategorie);
+        System.out.println("aa"+i);
+        return i;
 
     }
 

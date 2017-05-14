@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.myapp;
+package com.mycompany.myapp.produit;
 
 import Entities.Produit;
 import com.codename1.components.FloatingActionButton;
@@ -78,7 +78,7 @@ Label j = new Label();
                     new Label("remaining tasks", "CenterSubTitle")
             );
             ConnectionRequest con = new ConnectionRequest();
-            con.setUrl("http://localhost/pidev2017/select.php");
+            con.setUrl("http://localhost/pidev2017/produit/select.php");
             
 
             Image profilePic = Image.createImage("/lana.jpg");
@@ -165,7 +165,7 @@ Label j = new Label();
                                 Container c = new Container(new BoxLayout(BoxLayout.Y_AXIS));
                                 EncodedImage placeholder = EncodedImage.createFromImage(Image.createImage("/error.jpg"), false);
                                 Image image = URLImage.createToStorage(placeholder, "magasin+" + "/" + produit.getImageName(), "http://localhost/pidev2017/image/" + "/" + produit.getImageName());
-                                c.add(/*BorderLayout.center(*/new Label(image));
+                                c.add(BorderLayout.center(new Label(image.scaled(MonProfile.getWidth(), 250))));
                                 Container details = new Container(new BorderLayout());
                                 details.add(BorderLayout.WEST, new Label(produit.getLibelle(), "title"));
                                 details.add(BorderLayout.EAST,edit);

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.myapp;
+package com.mycompany.myapp.produit;
 
 import Entities.Produit;
 import com.codename1.io.ConnectionRequest;
@@ -26,9 +26,8 @@ import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.spinner.NumericSpinner;
 import com.codename1.ui.util.Resources;
-import java.io.IOException;
 import java.util.Date;
-import service.habchkleu;
+import service.ToolbarSideMenu;
 
 /**
  *
@@ -56,11 +55,11 @@ public class modifierProduit {
             return;
         }
         Form formModif = new Form(new BorderLayout());
-        new habchkleu().insertHabchkleu(formModif, false);
+        new ToolbarSideMenu().insertSetting(formModif, false);
         TextField txtlibelle = new TextField(produit.getLibelle());
         TextArea txtDescription = new TextArea(produit.getDescription());
         TextField txtmarque = new TextField(produit.getMarque());
-        Button btnModifier = new Button("Ajouter");
+        Button btnModifier = new Button("Modifier");
         Container n = new Container();
         n.add(txtlibelle);
         n.add(txtDescription);
@@ -105,7 +104,7 @@ public class modifierProduit {
                 Dialog.show(null, " Ajouter votre Stock ", "ok", null);
             }else {
                 String duree;
-                con.setUrl("http://localhost/pidev2017/modif.php?"
+                con.setUrl("http://localhost/pidev2017/produit/modif.php?"
                         + "libelle=" + txtlibelle.getText()
                         + "&description=" + txtDescription.getText()
                         + "&marque=" + txtmarque.getText()

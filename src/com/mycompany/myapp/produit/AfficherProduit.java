@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.myapp;
+package com.mycompany.myapp.produit;
 
 import Entities.Produit;
 import com.codename1.components.ImageViewer;
@@ -12,15 +12,17 @@ import com.codename1.io.NetworkEvent;
 import com.codename1.io.NetworkManager;
 import com.codename1.ui.Button;
 import com.codename1.ui.Container;
+import com.codename1.ui.FontImage;
 import com.codename1.ui.Form;
 import com.codename1.ui.Label;
 import com.codename1.ui.Toolbar;
+import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.util.Resources;
 import service.ProduitService;
-import service.habchkleu;
+import service.ToolbarSideMenu;
 
 /**
  *
@@ -39,7 +41,7 @@ public class AfficherProduit {
     public void start(Integer id, boolean isconnceted) {
 
         Form formAffiche = new Form(new BoxLayout(2));
-        new habchkleu().insertHabchkleu(formAffiche, false);
+        new ToolbarSideMenu().insertSetting(formAffiche, false);
 
         ConnectionRequest con = new ConnectionRequest();
         con.setUrl("http://localhost/pidev2017/select.php");
@@ -82,18 +84,35 @@ public class AfficherProduit {
                 )        
                 
                 );
+                 Toolbar tb = formAffiche.getToolbar();
+                        formAffiche.getToolbar().addCommandToLeftBar("", FontImage.createMaterial(FontImage.MATERIAL_ARROW_BACK, UIManager.getInstance().getComponentStyle("TitleCommand")), new ActionListener  () {
+                @Override
+                public void actionPerformed(ActionEvent evt) {
+                    new Home().start();
+                }
+                
+                
+            });
+                formAffiche.add(detailssup);
+                formAffiche.add(containerImage);
+                formAffiche.add(container6);
                 if (produit.getQuantiteStock()!=0) {
                     container6.add(BoxLayout.encloseX(
                     new Label("Stock : Disponible")
+                    
+                    )
+                            
+                    );
+                    Button Acheter = new Button("Acheter");
+                    Button Panier = new Button("Magasin");
+                    formAffiche.add(BoxLayout.encloseX(
+                            Acheter,Panier
                     ));
                 }else container6.add(BoxLayout.encloseX(
                     new Label("Stock : Indisponible","WelcomeRed")
                     ));
                 
-                formAffiche.add(detailssup);
-                formAffiche.add(containerImage);
-                formAffiche.add(container6);
-                System.out.println(produit.getQuantiteStock());
+                
                 if (isconnceted == true) {
 
                     Button btnSupprimer = new Button("Supprimer");

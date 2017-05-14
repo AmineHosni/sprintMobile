@@ -15,6 +15,9 @@ import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.util.Resources;
 import com.mycompany.myapp.Coupon.MesCoupon;
+import com.mycompany.myapp.Coupon.magasin.HomeMagasin;
+import com.mycompany.myapp.Coupon.magasin.Login;
+import com.mycompany.myapp.Coupon.magasin.MagasinList;
 import com.mycompany.myapp.produit.Home;
 import java.io.IOException;
 
@@ -69,7 +72,7 @@ public class ToolbarSideMenu {
 
             @Override
             public void actionPerformed(ActionEvent evt) {
-                // 7ot win t7ebbo yemchi
+               new MagasinList().getF().show();
             }
         });
 

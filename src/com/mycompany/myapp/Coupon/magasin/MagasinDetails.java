@@ -5,7 +5,9 @@
  */
 package com.mycompany.myapp.Coupon.magasin;
 
+import Entities.Categorie;
 import Entities.Magasin;
+import Entities.Produit;
 import com.codename1.io.CharArrayReader;
 import com.codename1.io.ConnectionRequest;
 import com.codename1.io.JSONParser;
@@ -13,6 +15,7 @@ import com.codename1.io.NetworkEvent;
 import com.codename1.io.NetworkManager;
 import com.codename1.l10n.ParseException;
 import com.codename1.l10n.SimpleDateFormat;
+import com.codename1.ui.Button;
 import com.codename1.ui.Command;
 import com.codename1.ui.Container;
 import com.codename1.ui.Dialog;
@@ -30,12 +33,14 @@ import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.layouts.GridLayout;
 import com.codename1.ui.plaf.UIManager;
-import com.codename1.ui.util.Resources;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import service.ProduitService;
 import service.ToolbarSideMenu;
+import com.mycompany.myapp.produit.AfficherProduit;
 
 /**
  *
@@ -50,9 +55,11 @@ public class MagasinDetails {
     Container container;
     Container detailsContainer;
 
+    Container LesProduits = new Container(new BoxLayout(BoxLayout.X_AXIS));
+
     Form f;
 
-    public MagasinDetails( Magasin magasin) {
+    public MagasinDetails(Magasin magasin) {
         System.out.println("Magasin details");
         String name = magasin.getName();
         int id = magasin.getId();
@@ -61,7 +68,7 @@ public class MagasinDetails {
         new ToolbarSideMenu().insertSetting(f, false);
 
         System.out.println(name);
-        
+
         f.getToolbar().addCommandToLeftBar("", FontImage.createMaterial(FontImage.MATERIAL_ARROW_BACK, UIManager.getInstance().getComponentStyle("TitleCommand")), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -147,12 +154,56 @@ public class MagasinDetails {
                     imageContainer.add(name);
                     magasinContainer.add(BorderLayout.NORTH, imageContainer);
 //                    magasinContainer.add(BorderLayout.CENTER, infoContainer);
-                    f.add(magasinContainer);
+                    ConnectionRequest req = new ConnectionRequest();
+                    req.setUrl("http://localhost/pidev2017/produit/select.php");
+                    ArrayList<Categorie> categorie2;
+                    req.addResponseListener(new ActionListener<NetworkEvent>() {
+                        Container LesProduits = new Container(new BoxLayout(BoxLayout.X_AXIS));
+
+                        @Override
+                        public void actionPerformed(NetworkEvent evt) {
+                            LesProduits.setScrollableX(true);
+                            LesProduits.setScrollableY(false);
+
+                            ArrayList<Produit> produits = new ProduitService().getListProduits(new String(req.getResponseData()));
+                            int size = produits.size();
+                            for (Produit produit : produits) {
+
+                                try {
+                                    Container containerProduit = new Container(new BoxLayout(BoxLayout.Y_AXIS));
+                                    EncodedImage placeholdera = EncodedImage.createFromImage(Image.createImage("/error.jpg"), false);
+                                    Image imagea = URLImage.createToStorage(placeholdera, produit.getImageName(), "http://localhost/pidev2017/image/" + "/" + produit.getImageName());
+                                    containerProduit.add(imagea.scaled(100, 100));
+                                    Container detailsContainer = new Container(new BoxLayout(BoxLayout.Y_AXIS));
+                                    detailsContainer.add(new Label(produit.getLibelle()));
+                                    detailsContainer.add(produit.getPrixProduit().toString());
+                                    containerProduit.add(detailsContainer);
+                                    Button b = new Button(produit.getLibelle());
+                                    b.addActionListener(e -> {
+                                        new AfficherProduit().start(produit.getId(), false);
+                                    });
+                                    b.setHidden(true);
+                                    containerProduit.add(b);
+                                    containerProduit.setLeadComponent(b);
+                                    LesProduits.add(containerProduit);
+
+                                } catch (IOException ex) {
+                                }
+                            }
+
+                            magasinContainer.add(BorderLayout.CENTER, LesProduits);
+                            f.add(magasinContainer);
+                            f.refreshTheme();
+                        }
+                    });
+                    NetworkManager.getInstance().addToQueue(req);
+
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
 
                 f.refreshTheme();
+
             }
 
         });
@@ -170,7 +221,6 @@ public class MagasinDetails {
 
                 f.removeAll();
                 NetworkManager.getInstance().addToQueue(con);
-//                NetworkManager.getInstance().addToQueue(req);
                 f.refreshTheme();
                 f.revalidate();
             }

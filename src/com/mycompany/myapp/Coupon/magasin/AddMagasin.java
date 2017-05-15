@@ -35,6 +35,7 @@ import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.plaf.Style;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.util.Resources;
+import com.mycompany.myapp.produit.Home;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -187,8 +188,7 @@ public class AddMagasin {
         f.getToolbar().addCommandToLeftBar("", FontImage.createMaterial(FontImage.MATERIAL_ARROW_BACK, UIManager.getInstance().getComponentStyle("TitleCommand")), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                HomeMagasin home = new HomeMagasin();
-                home.getF().show();
+                new Home().start();
             }
         });
 

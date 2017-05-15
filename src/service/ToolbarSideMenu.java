@@ -15,10 +15,10 @@ import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.util.Resources;
 import com.mycompany.myapp.Coupon.MesCoupon;
-import com.mycompany.myapp.Coupon.magasin.HomeMagasin;
 import com.mycompany.myapp.Coupon.magasin.Login;
-import com.mycompany.myapp.Coupon.magasin.MagasinList;
+import com.mycompany.myapp.Coupon.magasin.MesMagasinsList;
 import com.mycompany.myapp.produit.Home;
+import com.mycompany.myapp.produit.MonProfile;
 import java.io.IOException;
 
 /**
@@ -42,11 +42,20 @@ public class ToolbarSideMenu {
             Container seConnecter = new Container();
             seConnecter.add(new Label("Connecter", "Title"));
             Button btnSeConnecter = new Button();
-            btnSeConnecter.addActionListener(e -> System.out.println("Connecter"));
+            
+            btnSeConnecter.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent evt) {
+                    new Login().getF().show();
+                }
+            });
+            
             seConnecter.add(btnSeConnecter);
             seConnecter.setLeadComponent(btnSeConnecter);
             Container inscription = new Container();
+            
             inscription.add(new Label("Inscription", "Title"));
+            
             Button btnInscription = new Button();
             btnInscription.addActionListener(e -> System.out.println("Inscription"));
             seConnecter.add(btnInscription);
@@ -72,7 +81,7 @@ public class ToolbarSideMenu {
 
             @Override
             public void actionPerformed(ActionEvent evt) {
-               new MagasinList().getF().show();
+               new MesMagasinsList().getF().show();
             }
         });
 
@@ -121,14 +130,14 @@ public class ToolbarSideMenu {
 //            
 //            form.getToolbar().addComponentToSideMenu(c);
 //            
-//            form.getToolbar().addCommandToSideMenu("Mes Produits", null, new ActionListener() {
-//                
-//                @Override
-//                public void actionPerformed(ActionEvent evt) {
-//                    new MonProfile().start();
-//                }
-//
-//            });
+            form.getToolbar().addCommandToSideMenu("Mes Produits", null, new ActionListener() {
+                
+                @Override
+                public void actionPerformed(ActionEvent evt) {
+                    new MonProfile().start();
+                }
+
+            });
 //            
 //        } else {
 //            Container c = new Container();

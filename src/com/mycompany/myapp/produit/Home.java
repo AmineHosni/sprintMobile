@@ -22,7 +22,7 @@ import com.codename1.ui.URLImage;
 import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.list.DefaultListModel;
-import com.mycompany.myapp.Coupon.HomeCoupon;
+import com.mycompany.myapp.Coupon.MainCoupon;
 import java.io.IOException;
 import java.util.ArrayList;
 import service.ProduitService;
@@ -90,7 +90,7 @@ public class Home {
         
         Container container1 = new Container();
         Button b = new Button();
-        b.addActionListener(e->{new HomeCoupon().start();
+        b.addActionListener(e->{new MainCoupon().start();
 });
         container1.add(new Label("Tous Les Coupons"));
         container1.setLeadComponent(b);

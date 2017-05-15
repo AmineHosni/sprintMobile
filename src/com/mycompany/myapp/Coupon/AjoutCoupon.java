@@ -1,6 +1,7 @@
 package com.mycompany.myapp.Coupon;
 
 import com.codename1.capture.Capture;
+import com.codename1.components.FileTree;
 import com.codename1.io.ConnectionRequest;
 import com.codename1.ui.Display;
 import com.codename1.ui.Form;
@@ -8,19 +9,28 @@ import com.codename1.ui.Dialog;
 import com.codename1.ui.Label;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.util.Resources;
+import com.codename1.io.Log;
+import com.codename1.io.MultipartRequest;
 import com.codename1.io.NetworkEvent;
 import com.codename1.io.NetworkManager;
+import com.codename1.l10n.L10NManager;
+import com.codename1.l10n.ParseException;
 import com.codename1.l10n.SimpleDateFormat;
 import com.codename1.ui.Button;
+import com.codename1.ui.Calendar;
 import com.codename1.ui.Component;
 import com.codename1.ui.Image;
+import com.codename1.ui.TextArea;
 import com.codename1.ui.TextField;
 import com.codename1.ui.Toolbar;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.events.ActionListener;
+import com.codename1.ui.html.HTMLComponent;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.spinner.Picker;
+import java.io.IOException;
 import java.util.Date;
+import service.ToolbarSideMenu;
 
 
 /**
@@ -31,7 +41,7 @@ public class AjoutCoupon {
 
     private Form current;
     private Resources theme;
-    private int user_id = 2;
+    private int user_id = 1;
      String date_fin="";
      String date_deb="", pathph="";
     TextField tftitre;
@@ -53,7 +63,6 @@ Picker datePicker = new Picker();
     }
 
     public void start() {
-        System.out.println("Ajout coupon");
         Form f = new Form("Ajouter Coupon", BoxLayout.y());
 f.setUIID("AjoutForm");
         tftitre = new TextField("", "titre");
@@ -97,7 +106,7 @@ datePicker.setUIID("champs");datefin.setUIID("champs");
                 try {
                     img = Image.createImage(pathph);
                     lbl.setIcon(img);
-               //     System.out.println();
+                    System.out.println();
                     c.getComponentForm().revalidate();
                 } catch (Exception e) {
                 }
@@ -107,7 +116,7 @@ datePicker.setUIID("champs");datefin.setUIID("champs");
           
         Date today = new Date();
         String    dateu = formater.format(today);
-            //    System.out.println(dateu);
+                System.out.println(dateu);
         datePicker.addActionListener((ActionEvent l) -> {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             date_deb = formatter.format(datePicker.getDate());
@@ -128,7 +137,7 @@ datePicker.setUIID("champs");datefin.setUIID("champs");
                            date_fin = "";
                   return;
             }
-         //   System.out.println(date_fin);
+            System.out.println(date_fin);
 
         });
 
@@ -140,7 +149,7 @@ datePicker.setUIID("champs");datefin.setUIID("champs");
 
             @Override
             public void actionPerformed(ActionEvent evt) {
-             //    System.out.println(datePicker.getDate());
+                 System.out.println(datePicker.getDate());
                 if (tfdes.getText().equals("") || tfqte.getText().equals("") || tftauxred.getText().equals("") || tftitre.getText().equals("") ) {
                     Dialog.show("Erreurs", "Veuillez remplir tout les champs", "Ok", null);
                     return;
@@ -166,16 +175,16 @@ datePicker.setUIID("champs");datefin.setUIID("champs");
                     Dialog.show("Erreur", "Aucune Photo Trouvé", "Ok", null);
                 return;
                  }
-              //  System.out.println(pathph+"path"); 
+                System.out.println(pathph+"path"); 
                 ConnectionRequest req = new ConnectionRequest();
-                req.setUrl("http://localhost/pidev2017/coupon/insert.php?titre=" + tftitre.getText() + "&des=" + tfdes.getText() + "&qte=" + tfqte.getText() + "&tauxred=" + tftauxred.getText() + "&date_deb=" + date_deb + "&date_fin=" + date_fin + "&photo=" + pathph + "&user_id=" + user_id + "");
+                req.setUrl("http://localhost/pidev2017/coupon/insert.php?titre=" + tftitre.getText() + "&des=" + tfdes.getText() + "&qte=" + tfqte.getText() + "&tauxred=" + tftauxred.getText() + "&date_deb=" + date_deb + "&date_fin=" + date_fin + "&photo=" + pathph + "&user_id=" + user_id );
                 req.addResponseListener(new ActionListener<NetworkEvent>() {
 
                     @Override
                     public void actionPerformed(NetworkEvent evt) {
                         byte[] data = (byte[]) evt.getMetaData();
                         String s = new String(data);
-             //           System.out.println(s);
+                        System.out.println(s);
                         if (s.equals("success")) {
                             Dialog.show("Confirmation", "Ajouté Avec succès", "Ok", null);
                             tfdes.setText("");
@@ -184,6 +193,7 @@ datePicker.setUIID("champs");datefin.setUIID("champs");
                             tftitre.setText("");
                             lbl.setText("");
                             img.setImageName("");
+                           
                             //new affichage().start();
                         }
                     }
@@ -192,8 +202,14 @@ datePicker.setUIID("champs");datefin.setUIID("champs");
                 NetworkManager.getInstance().addToQueue(req);
 
             }
+        }); new ToolbarSideMenu().insertSetting(f, false);
+   
+          f.getToolbar().addCommandToSideMenu("Mes Coupons", null, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+           new MesCoupon().start();
+            }
         });
-         
             
         
 

@@ -1,7 +1,7 @@
 package com.mycompany.myapp.Coupon;
 
-import Entities.Coupon;
 import com.codename1.components.ImageViewer;
+import com.codename1.components.SpanLabel;
 import com.codename1.io.CharArrayReader;
 import com.codename1.io.ConnectionRequest;
 import com.codename1.io.JSONParser;
@@ -18,6 +18,7 @@ import com.codename1.ui.Button;
 import com.codename1.ui.Component;
 import com.codename1.ui.Container;
 import com.codename1.ui.EncodedImage;
+import com.codename1.ui.Graphics;
 import com.codename1.ui.Image;
 
 import com.codename1.ui.Toolbar;
@@ -28,8 +29,11 @@ import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.layouts.FlowLayout;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import Entities.Coupon;
 import service.ToolbarSideMenu;
 
 /**
@@ -42,9 +46,13 @@ public class AfficheCoupon {
     private Resources theme;
     ImageViewer img;
     Image imag;
-    Image del = null;
+    Image del =null;
+   
+    int id_coupon = 0;   
+    int id_user = 1;
 
-    int id_coupon = 0;
+
+       
 
     public void init(Object context) {
 
@@ -58,34 +66,24 @@ public class AfficheCoupon {
     }
 
     public void start() {
-        System.out.println("Afficher coupon");
         if (current != null) {
             current.show();
             return;
         }
-
         Form hi = new Form(new FlowLayout(Component.CENTER));
-        new ToolbarSideMenu().insertSetting(hi, false);
-        Image arrow = null;
-        try {
-            arrow = Image.createImage("/arrow.png");
-        } catch (IOException err) {
-            Log.e(err);
-        }
-
-        hi.getToolbar().addCommandToRightBar("", arrow.scaled(60, 20), e -> new MesCoupon().start());
-
         hi.setUIID("affichecoupon");
-        try {
-            del = Image.createImage("/delete-512.png");
-
-        } catch (IOException err) {
-            Log.e(err);
-        }
-        Button supbtn = new Button("Supprimer", del.scaled(20, 20));
-        supbtn.setUIID("btndel");
+        hi.show();
+               try {
+      del = Image.createImage("/delete-512.png");
+                
+} catch(IOException err) {
+    Log.e(err);
+}
+                Button supbtn = new Button("Supprimer", del.scaled(20,20));
+supbtn.setUIID("btndel");
         ConnectionRequest con = new ConnectionRequest();
-        con.setUrl("http://localhost/pidev2017/coupon/affiche.php?idc=" + id_coupon);
+        con.setUrl("http://localhost/pidev2017/coupon/affiche.php?idc=" + id_coupon+"&user="+id_user);
+        System.out.println("http://localhost/pidev2017/coupon/affiche.php?idc=" + id_coupon+"&user="+id_user);
         con.addResponseListener(new ActionListener<NetworkEvent>() {
             @Override
             public void actionPerformed(NetworkEvent evt) {
@@ -93,61 +91,67 @@ public class AfficheCoupon {
                 ArrayList<Coupon> coupons = getListEtudiant(new String(con.getResponseData()));
                 for (Coupon coupon : coupons) {
                     Container C1 = new Container(new BoxLayout(BoxLayout.Y_AXIS));
-                    Container C2 = new Container(new FlowLayout(Component.CENTER));
-                    Container C3 = new Container(new FlowLayout(Component.CENTER));
-                    Container C4 = new Container(new FlowLayout(Component.CENTER));
+                     Container C2 = new Container(new FlowLayout(Component.CENTER));   
+                     Container C3 = new Container(new FlowLayout(Component.CENTER));
+                    Container C4 = new Container(new FlowLayout(Component.CENTER));   
+
 
                     EncodedImage placeholder = EncodedImage.createFromImage(Image.createImage(100, 100), true);
                     EncodedImage placeholderr = EncodedImage.createFromImage(Image.createImage(100, 100), true);
 
                     Random as = new Random();
                     String s = as.nextInt(500) + "s";
-                    //     System.out.println(s);
-                    URLImage image = URLImage.createToStorage(placeholder, coupon.getImage(), "http://localhost/pidev2017/media/" + coupon.getImage());
-                    URLImage qr = URLImage.createToStorage(placeholderr, String.valueOf(coupon.getId()), "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=http%3A%2F%2Fhttp://192.168.43.145/eshop-master/web/app_dev.php/coupon/print/" + coupon.getId());
+                    System.out.println(s);
+                    URLImage image = URLImage.createToStorage(placeholder, coupon.getImage(), "http://localhost/eshop-master/web/images/products/" + coupon.getImage());
+                    ImageViewer i = new ImageViewer(image);
+                    String ip="localhost/eshop-master/web/app_dev.php";
+                    URLImage qr = URLImage.createToStorage(placeholderr,String.valueOf(coupon.getId()), "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=http%3A%2F%2Fhttp://192.168.43.145/eshop-master/web/app_dev.php/coupon/print/"+coupon.getId());
                     ImageViewer j = new ImageViewer(qr);
                     Image duke = null;
-                    try {
-                        duke = Image.createImage("/bardes.png");
-                    } catch (IOException err) {
-                        Log.e(err);
-                    }
+try {
+    duke = Image.createImage("/bardes.png");
+} catch(IOException err) {
+    Log.e(err);
+}
                     Label lt = new Label((coupon.getTitre()));
-                    Label des = new Label((coupon.getDescription()));
-                    Label date_deb = new Label("Date Debut :" + coupon.getDate_deb());
-                    Label date_finl = new Label(((coupon.getDate_fin())));
+                     Label des = new Label((coupon.getDescription()));
+                     Label date_deb = new Label("Date Debut :"+coupon.getDate_deb());
+                     Label date_finl = new Label(((coupon.getDate_fin())));
+                  
+                     Label date_fin = new Label("Date Expédition :");
+                     Label tauxred = new Label("Taux de Reduction : "+String.valueOf(coupon.getTauxred()));
+                     Label qte = new Label("Quantitée :"+String.valueOf(coupon.getQte()));
 
-                    Label date_fin = new Label("Date Expédition :");
-                    Label tauxred = new Label("Taux de Reduction : " + String.valueOf(coupon.getTauxred()));
-                    Label qte = new Label("Quantitée :" + String.valueOf(coupon.getQte()));
 
                     C1.setUIID("centrer");
-                    lt.setUIID("titrecoupon");
+                    lt.setUIID("titrecoupon");      
                     des.setUIID("descoupon");
-                    qte.setUIID("descoupon");
+                     qte.setUIID("descoupon");
                     tauxred.setUIID("descoupon");
                     date_deb.setUIID("descoupon");
-                    date_fin.setUIID("descoupon");
+                    date_fin.setUIID("descoupon");           
                     date_finl.setUIID("descoupon");
 
+                   
                     C1.add(image.scaled(250, 100));
                     C3.add(duke.scaled(200, 50));
-                    C2.add(lt);
-
-                    C1.add(C2);
+                    C2.add(lt);   
+                    
+ 
+                    C1.add(C2) ;
                     C1.add(C3);
-                    C4.add(des);
+                    C4.add(des);       
                     C1.add(C4);
                     C1.add(tauxred);
                     C1.add(qte);
                     C1.add(date_deb);
 
                     C1.add(date_fin);
-                    C1.add(date_finl);
+                                        C1.add(date_finl);
 
                     C1.add(qr);
                     C1.add(supbtn);
-
+                 
                     hi.add(C1);
 //        hi.add(picture); 
 
@@ -168,13 +172,13 @@ public class AfficheCoupon {
                     public void actionPerformed(NetworkEvent evt) {
                         byte[] data = (byte[]) evt.getMetaData();
                         String s = new String(data);
-                        // System.out.println(s);
+                        System.out.println(s);
                         if (s.equals("success")) {
                             Dialog.show("Confirmation", "Supprimé Avec succès", "Ok", null);
 
                             new MesCoupon().start();
-                        } else {
-                            Dialog.show("Confirmation", "Suppression echoué", "Ok", null);
+                        }else{
+                             Dialog.show("Confirmation", "Suppression echoué", "Ok", null);
                         }
                     }
                 });
@@ -184,7 +188,23 @@ public class AfficheCoupon {
             }
         });
         NetworkManager.getInstance().addToQueue(con);
-               hi.show();
+            Image arrow = null;
+       try {
+    arrow = Image.createImage("/arrow.png");
+} catch(IOException err) {
+    Log.e(err);
+}
+       
+        new ToolbarSideMenu().insertSetting(hi, false);
+   
+        hi.getToolbar().addCommandToSideMenu("Mes Coupons", null, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+           new MesCoupon().start();
+            }
+        });
+ hi.getToolbar().addCommandToRightBar("", arrow.scaled(60, 20), e -> new MesCoupon().start());
+     
 
     }
 
@@ -197,7 +217,7 @@ public class AfficheCoupon {
 
             Map<String, Object> etudiants = j.parseJSON(new CharArrayReader(json.toCharArray()));
 
-            //  System.out.println();
+            System.out.println();
             Map<String, Object> list = (Map<String, Object>) etudiants.get("etudiant");
 
             Coupon e = new Coupon();
@@ -210,7 +230,7 @@ public class AfficheCoupon {
             e.setQte(Integer.valueOf(list.get("qte").toString()));
             e.setTauxred(Double.valueOf(list.get("tauxreduction").toString()));
 
-            //    System.out.println(list.get("id_coupon").toString());
+            System.out.println(list.get("id_coupon").toString());
             listEtudiants.add(e);
 
         } catch (IOException ex) {
@@ -233,7 +253,7 @@ public class AfficheCoupon {
     public int setTexte(int k) {
         int id = k;
         id_coupon = k;
-        //   System.out.println(id_coupon);
+        System.out.println(id_coupon);
         return k;
     }
 

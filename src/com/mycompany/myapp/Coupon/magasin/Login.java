@@ -27,7 +27,7 @@ import com.codename1.ui.layouts.GridLayout;
 import com.codename1.ui.layouts.LayeredLayout;
 import com.codename1.ui.plaf.RoundBorder;
 import com.codename1.ui.plaf.Style;
-import com.codename1.ui.util.Resources;
+import com.mycompany.myapp.produit.Home;
 import service.ToolbarSideMenu;
 
 /**
@@ -37,10 +37,10 @@ import service.ToolbarSideMenu;
 public class Login {
 
     Form hi;
-    static Boolean isLogged = false;
+    public static Boolean isLogged = false;
 //    String username;
 //    static User user = new User();
-    static String id="";
+    public static String id = "";
 
     public Login() {
         hi = new Form("Login", new BorderLayout(BorderLayout.CENTER_BEHAVIOR_CENTER));
@@ -101,7 +101,7 @@ public class Login {
         boxStyle.setPadding(2, 2, 2, 2);
 
         closeButton.addActionListener((ActionListener) (ActionEvent evt) -> {
-            new HomeMagasin().getF().show();
+            new Home().start();
         });
 
         hi.add(BorderLayout.CENTER, layers);
@@ -109,7 +109,7 @@ public class Login {
         cancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                new HomeMagasin().getF().show();
+                new Home().start();
             }
         });
         ok.addActionListener(new ActionListener() {
@@ -126,14 +126,28 @@ public class Login {
 //                        user = getUser(new String(req.getResponseData()), tflogin.getText(), tfpassword.getText());
                         id = new String(req.getResponseData());
                         if (!id.equals("")) {
+
                             
-                            System.out.println("id: "+id);
+                            
+                            ConnectionRequest con = new ConnectionRequest();
+                            con.setUrl("http://localhost/pidev2017/magasin/loginGetUser.php?username=" + tflogin.getText() + "&password=" + tfpassword.getText());
+                            con.addResponseListener(new ActionListener<NetworkEvent>() {
+                                @Override
+                                public void actionPerformed(NetworkEvent evt) {
+                                    
+                                    
+                                    
+                                }
+                            });
+                            
+                            
+
+                            System.out.println("id: " + id);
                             isLogged = true;
-                            HomeMagasin home = new HomeMagasin();
-                            home.getF().show();
+                            new Home().start();
                         } else if (!Dialog.show("Erreur !", "login ou mot de passe incorrect", "Ok", "abandonner")) {
-                            HomeMagasin home = new HomeMagasin();
-                            home.getF().show();
+
+                            new Home().start();
                         }
                     }
                 });
@@ -168,7 +182,6 @@ public class Login {
 //        return u;
 //
 //    }
-
     public Form getF() {
         return hi;
     }

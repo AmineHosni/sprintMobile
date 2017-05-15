@@ -5,7 +5,10 @@
  */
 package com.mycompany.myapp.Coupon.magasin;
 
+import Entities.Utilisateur;
+import com.codename1.io.CharArrayReader;
 import com.codename1.io.ConnectionRequest;
+import com.codename1.io.JSONParser;
 import com.codename1.io.NetworkEvent;
 import com.codename1.io.NetworkManager;
 import com.codename1.ui.Button;
@@ -28,6 +31,9 @@ import com.codename1.ui.layouts.LayeredLayout;
 import com.codename1.ui.plaf.RoundBorder;
 import com.codename1.ui.plaf.Style;
 import com.mycompany.myapp.produit.Home;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
 import service.ToolbarSideMenu;
 
 /**
@@ -41,6 +47,7 @@ public class Login {
 //    String username;
 //    static User user = new User();
     public static String id = "";
+    public static Utilisateur user;
 
     public Login() {
         hi = new Form("Login", new BorderLayout(BorderLayout.CENTER_BEHAVIOR_CENTER));
@@ -127,20 +134,18 @@ public class Login {
                         id = new String(req.getResponseData());
                         if (!id.equals("")) {
 
-                            
-                            
                             ConnectionRequest con = new ConnectionRequest();
-                            con.setUrl("http://localhost/pidev2017/magasin/loginGetUser.php?username=" + tflogin.getText() + "&password=" + tfpassword.getText());
+                            con.setUrl("http://localhost/pidev2017/magasin/loginGetUser.php?userid=" + id);
                             con.addResponseListener(new ActionListener<NetworkEvent>() {
                                 @Override
                                 public void actionPerformed(NetworkEvent evt) {
-                                    
-                                    
-                                    
+
+                                    ArrayList<Utilisateur> users = getUtilisateurs(new String(con.getResponseData()));
+                                    user = users.get(0);
+
                                 }
                             });
-                            
-                            
+                            NetworkManager.getInstance().addToQueue(con);
 
                             System.out.println("id: " + id);
                             isLogged = true;
@@ -182,6 +187,39 @@ public class Login {
 //        return u;
 //
 //    }
+    public ArrayList<Utilisateur> getUtilisateurs(String json) {
+
+        ArrayList<Utilisateur> listMagasins = new ArrayList<>();
+        try {
+
+            JSONParser j = new JSONParser();
+            Map<String, Object> magasins = j.parseJSON(new CharArrayReader(json.toCharArray()));
+            System.out.println(magasins.getClass());
+            Map<String, Object> list = (Map<String, Object>) magasins.get("user");
+            System.out.println("list: " + list);
+
+            Utilisateur m = new Utilisateur();
+            for (Map.Entry<String, Object> obj : list.entrySet()) {
+                if (obj.getKey().toString().equals("id")) {
+                    m.setId(Integer.parseInt(obj.getValue().toString()));
+                }
+                if (obj.getKey().toString().equals("username")) {
+                    m.setUsername(obj.getValue().toString());
+                }
+                if (obj.getKey().toString().equals("email")) {
+                    m.setEmail(obj.getValue().toString());
+                }
+                if (obj.getKey().toString().equals("image")) {
+                    m.setImage(obj.getValue().toString());
+                }
+
+            }
+            listMagasins.add(m);
+        } catch (IOException ex) {
+        }
+        return listMagasins;
+    }
+
     public Form getF() {
         return hi;
     }

@@ -39,7 +39,7 @@ public class AddProductToMagasin {
     private Resources theme;
 
     public void init(Object context) {
-        theme = UIManager.initFirstTheme("/theme");
+        theme = UIManager.initFirstTheme("/theme2");
 
         // Enable Toolbar on all Forms by default
         Toolbar.setGlobalToolbar(true);
@@ -67,6 +67,7 @@ public class AddProductToMagasin {
 //            Button button = new Button(lien.getName());
 //            choiceContainer.add(button);
             Label labelId = new Label(String.valueOf(lien.getId()));
+            
             CheckBox chkBx = new CheckBox(lien.getName());
             
             //chkBx.isSelected();

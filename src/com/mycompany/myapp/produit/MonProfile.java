@@ -33,6 +33,7 @@ import com.codename1.ui.layouts.LayeredLayout;
 import com.codename1.ui.plaf.Style;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.util.Resources;
+import com.mycompany.myapp.Coupon.magasin.Login;
 import java.io.IOException;
 import java.util.ArrayList;
 import service.ProduitService;
@@ -42,7 +43,8 @@ import service.ProduitService;
  * @author MBM info
  */
 public class MonProfile {
-Label j = new Label();
+
+    Label j = new Label();
     Form current;
 
     private Resources theme;
@@ -53,25 +55,22 @@ Label j = new Label();
 
     }
 
-    public void start()  {
-         
+    public void start() {
 
         try {
             if (current != null) {
                 current.show();
                 return;
             }
-            
-            
+
             Form MonProfile = new Form(BoxLayout.y());
             Toolbar tb = MonProfile.getToolbar();
-                        MonProfile.getToolbar().addCommandToLeftBar("", FontImage.createMaterial(FontImage.MATERIAL_ARROW_BACK, UIManager.getInstance().getComponentStyle("TitleCommand")), new ActionListener  () {
+            MonProfile.getToolbar().addCommandToLeftBar("", FontImage.createMaterial(FontImage.MATERIAL_ARROW_BACK, UIManager.getInstance().getComponentStyle("TitleCommand")), new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     new Home().start();
                 }
-                
-                
+
             });
             Container remainingTasks = BoxLayout.encloseY(
                     new Label("12", "CenterTitle"),
@@ -79,7 +78,6 @@ Label j = new Label();
             );
             ConnectionRequest con = new ConnectionRequest();
             con.setUrl("http://localhost/pidev2017/produit/select.php");
-            
 
             Image profilePic = Image.createImage("/lana.jpg");
             int w = profilePic.getWidth();
@@ -104,16 +102,14 @@ Label j = new Label();
                     BorderLayout.centerAbsolute(
                             BoxLayout.encloseX(
                                     BoxLayout.encloseY(
-                                            
                                             new Label("Jamel", "Title")
-                                            
-                                    ), new Label(maskedImage)
+                                    )//, new Label(maskedImage)
                             )
                     ));
             tb.add(BorderLayout.CENTER, titleCmp);
             FloatingActionButton fab = FloatingActionButton.createFAB(FontImage.MATERIAL_ADD);
             fab.bindFabToContainer(MonProfile.getContentPane());
-            
+
             fab.getAllStyles().setMarginUnit(Style.UNIT_TYPE_PIXELS);
             fab.getAllStyles().setMargin(BOTTOM, completedTasks.getPreferredH() - fab.getPreferredH() / 2);
             fab.addActionListener(e -> {
@@ -141,7 +137,7 @@ Label j = new Label();
                     int t = MonProfile.getTintColor();
                     MonProfile.setTintColor(0);
                     popup.showPopupDialog(new Rectangle(MonProfile.getWidth() - 20, MonProfile.getHeight() - 15, 10, 10));
-                    
+
                     MonProfile.setTintColor(t);
                 } catch (IOException ex) {
                 }
@@ -149,11 +145,12 @@ Label j = new Label();
             con.addResponseListener(new ActionListener<NetworkEvent>() {
                 @Override
                 public void actionPerformed(NetworkEvent evt) {
-                    
+
                     ArrayList<Produit> produits = new ProduitService().getListProduits(new String(con.getResponseData()));
                     for (Produit produit : produits) {
-                        if (produit.getSeller() == 9) {
-                            
+                        System.out.println(produit.getSeller());
+                        if (String.valueOf(produit.getSeller()).equals("2")) {
+
                             try {
                                 Container edit = new Container();
                                 Image g = Image.createImage("/arrow.png");
@@ -168,20 +165,20 @@ Label j = new Label();
                                 c.add(BorderLayout.center(new Label(image.scaled(MonProfile.getWidth(), 250))));
                                 Container details = new Container(new BorderLayout());
                                 details.add(BorderLayout.WEST, new Label(produit.getLibelle(), "title"));
-                                details.add(BorderLayout.EAST,edit);
+                                details.add(BorderLayout.EAST, edit);
                                 c.add(details);
                                 MonProfile.add(c);
                             } catch (IOException ex) {
                             }
                         }
                     }
-                    
+
                 }
             });
             NetworkManager.getInstance().addToQueue(con);
             MonProfile.show();
         } catch (IOException ex) {
         }
-        
+
     }
 }

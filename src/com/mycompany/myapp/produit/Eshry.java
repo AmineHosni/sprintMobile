@@ -30,6 +30,10 @@ public class Eshry {
    // new sqlDatabase().start();
    // new Login().start();
     new Home().start();
+//    new MonProfile().start();
+//    new ListProduit().start();
+//    new InsertProduit().start();
+    
     }
 
     public void stop() {

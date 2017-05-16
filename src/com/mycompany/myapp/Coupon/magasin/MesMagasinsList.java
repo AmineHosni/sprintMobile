@@ -132,6 +132,8 @@ public class MesMagasinsList {
 
             }
         });
+
+        //Search Magasin
         hi.getToolbar().addMaterialCommandToRightBar("", FontImage.MATERIAL_SEARCH, e -> {
 //            new Search().start(txtSearch.getText());
             String t = searchField.getText();
@@ -192,7 +194,25 @@ public class MesMagasinsList {
         });
         hi.refreshTheme();
 
+        hi.getContentPane().addPullToRefresh(new Runnable() {
+            @Override
+            public void run() {
+//                infoContainer.removeAll();
+                magasinContainer.removeAll();
+                imageContainer.removeAll();
+//                container.removeAll();
+//                detailsContainer.removeAll();
+
+                hi.removeAll();
+                NetworkManager.getInstance().addToQueue(con);
+                hi.refreshTheme();
+                hi.revalidate();
+            }
+        });
+
         NetworkManager.getInstance().addToQueue(con);
+        hi.refreshTheme();
+
     }
 
     public Form getF() {

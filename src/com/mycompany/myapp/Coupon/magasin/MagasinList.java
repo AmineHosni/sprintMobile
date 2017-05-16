@@ -41,6 +41,7 @@ import java.util.Map;
 import Entities.Magasin;
 import com.codename1.ui.Display;
 import com.codename1.ui.Font;
+import com.mycompany.myapp.produit.Home;
 import service.ToolbarSideMenu;
 
 /**
@@ -60,6 +61,8 @@ public class MagasinList {
     Container detailsContainer;
 
     public MagasinList() {
+        System.out.println("Login id: "+Login.id);
+        
         System.out.println("Magasin list");
         hi = new Form("Liste des magasins", new BoxLayout(2));
         new ToolbarSideMenu().insertSetting(hi, false);
@@ -131,40 +134,6 @@ public class MagasinList {
 
             }
         });
-
-//        searchField.addDataChangeListener((i1, i2) -> { // <2>
-//            String t = searchField.getText();
-//            if (t.length() < 1) {
-//                for (Component cmp : hi.getContentPane()) {
-//                    cmp.setHidden(false);
-//                    cmp.setVisible(true);
-//                }
-//            } else {
-//                t = t.toLowerCase();
-//                for (Component cmp : hi.getContentPane()) {
-//                    String val = null;
-//                    if (cmp instanceof Label) {
-//                        val = ((Label) cmp).getText();
-//                    } else if (cmp instanceof TextArea) {
-//                        val = ((TextArea) cmp).getText();
-//                    } else {
-//                        val = (String) cmp.getPropertyValue("text");
-//                    }
-//                    boolean show = val != null && val.toLowerCase().indexOf(t) > -1;
-//                    cmp.setHidden(!show); // <3>
-//                    cmp.setVisible(show);
-//                }
-//            }
-//            hi.getContentPane().animateLayout(250);
-//        });
-//
-//        hi.add("A Game of Thrones").
-//        add("A Clash Of Kings").
-//        add("A Storm Of Swords").
-//        add("A Feast For Crows").
-//        add("A Dance With Dragons").
-//        add("The Winds of Winter").
-//        add("A Dream of Spring");
         hi.getToolbar().addMaterialCommandToRightBar("", FontImage.MATERIAL_SEARCH, e -> {
 //            new Search().start(txtSearch.getText());
             String t = searchField.getText();
@@ -220,54 +189,12 @@ public class MagasinList {
         hi.getToolbar().addCommandToLeftBar("", FontImage.createMaterial(FontImage.MATERIAL_ARROW_BACK, UIManager.getInstance().getComponentStyle("TitleCommand")), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                HomeMagasin home = new HomeMagasin();
-                home.getF().show();
+                new Home().start();
             }
         });
-//        hi.getToolbar().addCommandToSideMenu("List Check", null, new ActionListener() {
-//
-//            @Override
-//            public void actionPerformed(ActionEvent evt) {
-//                //f2.show();
-//                ListCheck login = new ListCheck(theme);
-//                login.getF().showBack();
-//            }
-//        });
-//        hi.getToolbar().addCommandToSideMenu("Select items", null, new ActionListener() {
-//
-//            @Override
-//            public void actionPerformed(ActionEvent evt) {
-//                //f2.show();
-//                SelectableItems login = new SelectableItems(theme);
-//                login.getF().showBack();
-//            }
-//        });
         hi.refreshTheme();
 
         NetworkManager.getInstance().addToQueue(con);
-
-//        hi.getContentPane().addPullToRefresh(new Runnable() {
-//            @Override
-//            public void run() {
-////                infoContainer.removeAll();
-//                magasinContainer.removeAll();
-//                imageContainer.removeAll();
-////                container.removeAll();
-////                detailsContainer.removeAll();
-//
-//                infoContainer.removeAll();
-//                magasinContainers.removeAll();
-//                imageContainer.removeAll();
-//                container.removeAll();
-//                detailsContainer.removeAll();
-//
-//                hi.removeAll();
-//                NetworkManager.getInstance().addToQueue(con);
-////                NetworkManager.getInstance().addToQueue(req);
-//                hi.refreshTheme();
-//                hi.revalidate();
-//            }
-//        });
     }
 
     public Form getF() {

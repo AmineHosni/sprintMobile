@@ -7,9 +7,12 @@ package service;
 
 import com.codename1.ui.Button;
 import com.codename1.ui.Container;
+import com.codename1.ui.EncodedImage;
 import com.codename1.ui.Form;
+import com.codename1.ui.Graphics;
 import com.codename1.ui.Image;
 import com.codename1.ui.Label;
+import com.codename1.ui.URLImage;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.layouts.BoxLayout;
@@ -35,71 +38,133 @@ public class ToolbarSideMenu {
 
         Container utilisateur = new Container(new BoxLayout(BoxLayout.X_AXIS));
 
-        try {
-            Image profilePic = Image.createImage("/user.png");
-            utilisateur.add(profilePic);
-            Container utilisateurCommand = new Container(new BoxLayout(BoxLayout.Y_AXIS));
-            Container seConnecter = new Container();
-            seConnecter.add(new Label("Connecter", "Title"));
-            Button btnSeConnecter = new Button();
-            
-            btnSeConnecter.addActionListener(new ActionListener() {
+        if (!Login.getStatus()) {
+
+            try {
+                Image profilePic = Image.createImage("/user.png");
+                utilisateur.add(profilePic);
+                Container utilisateurCommand = new Container(new BoxLayout(BoxLayout.Y_AXIS));
+                Container seConnecter = new Container();
+                seConnecter.add(new Label("Connecter", "Title"));
+                Button btnSeConnecter = new Button();
+
+                btnSeConnecter.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent evt) {
+                        new Login().getF().show();
+                    }
+                });
+
+                seConnecter.add(btnSeConnecter);
+                seConnecter.setLeadComponent(btnSeConnecter);
+//                Container inscription = new Container();
+
+//                inscription.add(new Label("Inscription", "Title"));
+//
+//                Button btnInscription = new Button();
+//                btnInscription.addActionListener(e -> System.out.println("Inscription"));
+//                seConnecter.add(btnInscription);
+//                inscription.setLeadComponent(btnInscription);
+                utilisateurCommand.add(seConnecter);
+//                utilisateurCommand.add(inscription);
+
+                utilisateur.add(utilisateurCommand);
+
+                form.getToolbar().addComponentToSideMenu(utilisateur);
+            } catch (IOException ex) {
+            }
+
+            form.getToolbar().addCommandToSideMenu("Home", null, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    new Login().getF().show();
+                    new Home().start();
                 }
             });
-            
-            seConnecter.add(btnSeConnecter);
-            seConnecter.setLeadComponent(btnSeConnecter);
-            Container inscription = new Container();
-            
-            inscription.add(new Label("Inscription", "Title"));
-            
-            Button btnInscription = new Button();
-            btnInscription.addActionListener(e -> System.out.println("Inscription"));
-            seConnecter.add(btnInscription);
-            inscription.setLeadComponent(btnInscription);
 
-            utilisateurCommand.add(seConnecter);
-            utilisateurCommand.add(inscription);
+        } else {
 
+            Image maskedImage = null;
+            try {
+                EncodedImage placeholder = EncodedImage.createFromImage(Image.createImage("/lana.jpg"), true);
+                Image profilePic = URLImage.createToStorage(placeholder, "x" + Login.user.getImage(), "http://localhost/CodeNameOne/" + Login.user.getImage());
+
+                //form.addComponent(label1);
+                int w = profilePic.getWidth();
+                int h = profilePic.getHeight();
+                Image maskImage = Image.createImage(w, h);
+                Graphics g = maskImage.getGraphics();
+                g.setAntiAliased(true);
+                g.setColor(0x000000);
+                g.fillRect(0, 0, w, h);
+                g.setColor(0xffffff);
+                g.fillArc(0, 0, w, h, 0, 360);
+
+                Object mask = maskImage.createMask();
+
+                maskedImage = profilePic.applyMask(mask);
+
+                utilisateur.add(maskedImage.scaled(50, 50));
+
+            } catch (IOException ex) {
+            }
+            Container utilisateurCommand = new Container(new BoxLayout(BoxLayout.Y_AXIS));
+            Container seDeconnecter = new Container();
+            seDeconnecter.add(new Label("Déconnecter", "Title"));
+            Button btnSeDeconnecter = new Button();
+            btnSeDeconnecter.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent evt) {
+                    Login.setStatus(false);
+                    new Home().start();
+                }
+            });
+            seDeconnecter.add(btnSeDeconnecter);
+            seDeconnecter.setLeadComponent(btnSeDeconnecter);
+            utilisateurCommand.add(seDeconnecter);
             utilisateur.add(utilisateurCommand);
-
             form.getToolbar().addComponentToSideMenu(utilisateur);
-        } catch (IOException ex) {
+
+            form.getToolbar().addCommandToSideMenu("Home", null, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent evt) {
+                    new Home().start();
+                }
+            });
+
+            form.getToolbar().addCommandToSideMenu("Mes Magasins", null, new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent evt) {
+                    new MesMagasinsList().getF().show();
+                }
+            });
+
+            form.getToolbar().addCommandToSideMenu("Vente Flash", null, new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent evt) {
+                    // 7ot win t7ebbo yemchi
+                }
+            });
+
+            form.getToolbar().addCommandToSideMenu("Mes Coupons", null, new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent evt) {
+                    new MesCoupon().start();
+                }
+            });
+
+            form.getToolbar().addCommandToSideMenu("Mes Produits", null, new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent evt) {
+                    new MonProfile().start();
+                }
+
+            });
+
         }
-
-        form.getToolbar().addCommandToSideMenu("Home", null, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                new Home().start();
-            }
-        });
-
-        form.getToolbar().addCommandToSideMenu("Magasins", null, new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-               new MesMagasinsList().getF().show();
-            }
-        });
-
-        form.getToolbar().addCommandToSideMenu("Vente Flash", null, new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                // 7ot win t7ebbo yemchi
-            }
-        });
-
-        form.getToolbar().addCommandToSideMenu("Mes Coupons", null, new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                new MesCoupon().start();
-            }
-        });
 
 //        try {
 //
@@ -130,14 +195,6 @@ public class ToolbarSideMenu {
 //            
 //            form.getToolbar().addComponentToSideMenu(c);
 //            
-            form.getToolbar().addCommandToSideMenu("Mes Produits", null, new ActionListener() {
-                
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    new MonProfile().start();
-                }
-
-            });
 //            
 //        } else {
 //            Container c = new Container();

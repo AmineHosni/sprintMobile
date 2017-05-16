@@ -52,7 +52,6 @@ public class ProduitService {
                 Date createdDate = sdf.parse(dateStr);
                   produit.setCreatedDate(createdDate);
                 
-                
                 produit.setDescription(obj.get("description").toString());
                 produit.setSeller(Integer.parseInt(obj.get("seller").toString()));
                 listEtudiants.add(produit);
@@ -80,8 +79,8 @@ public class ProduitService {
                     produit.setMarque(obj.get("marque").toString());
                     produit.setEtat(obj.get("etat").toString());
                     produit.setImageName(obj.get("image_name").toString());
-                    produit.setImageName2(obj.get("image_name2").toString());
-                    produit.setImageName3(obj.get("image_name3").toString());
+//                    produit.setImageName2(obj.get("image_name2").toString());
+//                    produit.setImageName3(obj.get("image_name3").toString());
                     produit.setPrixProduit(Double.parseDouble(obj.get("prixProduit").toString()));
                     produit.setLibelle(obj.get("libelle").toString());
                     produit.setDescription(obj.get("description").toString());

@@ -30,6 +30,7 @@ import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.spinner.NumericSpinner;
 import com.codename1.ui.util.Resources;
+import com.mycompany.myapp.Coupon.magasin.Login;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,7 +42,7 @@ import service.ToolbarSideMenu;
  * @author MBM info
  */
 public class InsertProduit {
-    
+
     String imageName;
     Form current;
     MultipartRequest cr = null;
@@ -111,24 +112,22 @@ public class InsertProduit {
         n.add(comboEtat);
         n.add(comboDuree);
         ConnectionRequest concategorie = new ConnectionRequest();
-        concategorie.setUrl("http://localhost/pidev2017/produit/produit/selectcategorie.php");
+        concategorie.setUrl("http://localhost/pidev2017/produit/selectcategorie.php");
         concategorie.addResponseListener(new ActionListener<NetworkEvent>() {
             @Override
             public void actionPerformed(NetworkEvent evt) {
-                        ArrayList<Categorie> list = new ArrayList<>();
-                        list = new CategorieService().getListCategorie(new String(concategorie.getResponseData()));
-                        for (Categorie categorie : list) {
-                           chCategorie.addItem(categorie.getNomCategorie());
+                ArrayList<Categorie> list = new ArrayList<>();
+                list = new CategorieService().getListCategorie(new String(concategorie.getResponseData()));
+                for (Categorie categorie : list) {
+                    chCategorie.addItem(categorie.getNomCategorie());
                 }
-                        n.add(chCategorie);
+                n.add(chCategorie);
             }
-        
-        
+
         });
-         NetworkManager.getInstance().addToQueue(concategorie);
-        
-         
-         n.add(btnAjouterPhoto);
+        NetworkManager.getInstance().addToQueue(concategorie);
+
+        n.add(btnAjouterPhoto);
         n.setScrollableY(true);
         formAffiche.add(BorderLayout.CENTER, n);
         formAffiche.add(BorderLayout.SOUTH, btnAjouter);
@@ -136,6 +135,7 @@ public class InsertProduit {
         ConnectionRequest con = new ConnectionRequest();
 
         btnAjouter.addActionListener(e -> {
+            System.out.println("okkkkkkkkkkkkkkkkkkk");
 
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date date = new Date();
@@ -151,7 +151,7 @@ public class InsertProduit {
                 Dialog.show(null, " Ajouter votre marque ", "ok", null);
             } else if (stock.getValue() == 0) {
                 Dialog.show(null, " Ajouter votre Stock ", "ok", null);
-            } else if (cr == null) {
+            } else if (imageName == null) {
 
                 Dialog.show(null, " Ajouter votre Photo ", "ok", null);
 
@@ -165,7 +165,7 @@ public class InsertProduit {
                     duree = "45";
                 }
 
-                con.setUrl("http://localhost/pidev2017/insert.php?"
+                con.setUrl("http://localhost/pidev2017/produit/insert.php?"
                         + "libelle=" + txtlibelle.getText()
                         + "&description=" + txtDescription.getText()
                         + "&marque=" + txtmarque.getText()
@@ -174,13 +174,27 @@ public class InsertProduit {
                         + "&quantiteStock=" + stock.getValue()
                         + "&created_date=" + datenow
                         + "&duree=" + duree
-                        + "&pourcentagePromotion=" + pourcentagePromotion
+                        + "&pourcentagePromotion=" + 5
+                        + "&produitCategorie=" + 2//chCategorie.getSelectedItem()
+
                         + "&image_name=" + imageName
-                        + "&image_name2=" + imageName
-                        + "&image_name3=" + imageName
-                        + "&seller=" + 9
+                        + "&seller_id=" + Login.user.getId()
                 );
-                
+                System.out.println("http://localhost/pidev2017/produit/insert.php?"
+                        + "libelle=" + txtlibelle.getText()
+                        + "&description=" + txtDescription.getText()
+                        + "&marque=" + txtmarque.getText()
+                        + "&etat=" + comboEtat.getSelectedItem()
+                        + "&prixProduit=" + prix.getValue()
+                        + "&quantiteStock=" + stock.getValue()
+                        + "&created_date=" + datenow
+                        + "&duree=" + duree
+                        + "&pourcentagePromotion=" + 8
+                                                + "&produitCategorie=" + 2
+
+                        + "&image_name=" + imageName
+                        + "&seller_id=" + Login.user.getId());
+
                 NetworkManager.getInstance().addToQueue(con);
                 new ListProduit().start();
 
@@ -188,28 +202,26 @@ public class InsertProduit {
 
         });
 
-       
         btnAjouterPhoto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
-                    MultipartRequest mr = new MultipartRequest();
+                    MultipartRequest cr = new MultipartRequest();
                     String filePath = Capture.capturePhoto(Display.getInstance().getDisplayWidth(), -1);
-                    mr.setUrl("http://localhost/pidev2017/addimage.php");
-                    mr.setPost(true);
+                    cr.setUrl("http://localhost/pidev2017/produit/addimage.php");
+                    cr.setPost(true);
                     String mime = "image/jpeg";
                     if (filePath != null) {
-                        mr.addData("file", filePath, mime);
+                        cr.addData("file", filePath, mime);
                         System.out.println(filePath);
-                        mr.setFilename("file", filePath);//any unique name you want
+                        cr.setFilename("file", filePath);//any unique name you want
                         imageName = filePath;
                         int index = imageName.lastIndexOf("/");
                         imageName = imageName.substring(index + 1);
                         InfiniteProgress prog = new InfiniteProgress();
                         Dialog dlg = prog.showInifiniteBlocking();
-                        mr.setDisposeOnCompletion(dlg);
-                        NetworkManager.getInstance().addToQueueAndWait(mr);
-                        cr=mr;
+                        cr.setDisposeOnCompletion(dlg);
+                        NetworkManager.getInstance().addToQueueAndWait(cr);
                     }
 
                 } catch (IOException ex) {
@@ -218,8 +230,7 @@ public class InsertProduit {
             }
 
         });
-    
+
     }
-    
 
 }

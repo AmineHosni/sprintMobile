@@ -106,6 +106,7 @@ public class ListProduit {
                         LesProduits.add(containerProduit);
 
                     } catch (IOException ex) {
+                        System.out.println(new String(con.getResponseData()));
                     }
                 }
                 hi.add(LesProduits);

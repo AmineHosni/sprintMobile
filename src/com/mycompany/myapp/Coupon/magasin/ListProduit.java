@@ -17,6 +17,7 @@ import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.layouts.FlowLayout;
 import com.codename1.ui.plaf.UIManager;
+import com.mycompany.myapp.produit.AfficherProduit;
 import java.io.IOException;
 import java.util.ArrayList;
 import service.ProduitService;
@@ -27,8 +28,10 @@ import service.ToolbarSideMenu;
  * One</a> for the purpose of building native mobile applications using Java.
  */
 public class ListProduit {
-private Resources theme;
-public void init(Object context) {
+
+    private Resources theme;
+
+    public void init(Object context) {
         theme = UIManager.initFirstTheme("/theme");
 
         // Enable Toolbar on all Forms by default
@@ -67,7 +70,7 @@ public void init(Object context) {
                         b.addActionListener(new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent evt) {
-                                new AfficherProduit(theme, produit).show();
+                                new AfficherProduit().start(produit.getId(), false);
                                 System.out.println(".actionPerformed()");
                             }
 

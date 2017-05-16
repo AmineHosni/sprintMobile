@@ -10,7 +10,6 @@ import com.codename1.components.ImageViewer;
 import com.codename1.io.CharArrayReader;
 import com.codename1.io.ConnectionRequest;
 import com.codename1.io.JSONParser;
-import static com.codename1.io.Log.p;
 import com.codename1.io.NetworkEvent;
 import com.codename1.io.NetworkManager;
 import com.codename1.ui.Button;
@@ -23,6 +22,7 @@ import com.codename1.ui.Toolbar;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.layouts.BoxLayout;
+import com.codename1.ui.layouts.GridLayout;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.util.Resources;
 import com.mycompany.myapp.Coupon.magasin.AddMagasin;
@@ -116,77 +116,89 @@ public class AfficherProduit {
 
                             String idMagasin = new String(con.getResponseData());
                             if (!idMagasin.equals("")) {
-                                
-                                
+
                                 Button btnMagasin = new Button("add to magasin");
-                    btnMagasin.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent evt) {
-                            ConnectionRequest con = new ConnectionRequest();
-                            con.setUrl("http://localhost/pidev2017/magasin/getNombreMagasinParUserId.php?id=" + Login.id);
-                            con.addResponseListener(new ActionListener<NetworkEvent>() {
-                                @Override
-                                public void actionPerformed(NetworkEvent evt) {
-
-                                    int nombreMagasins = Integer.valueOf(new String(con.getResponseData()));
-                                    System.out.println("nombre de magasins :" + nombreMagasins);
-                                    if (nombreMagasins == 0) {
-                                        if (Dialog.show("Pas de magasins ?", "Créez-en un dès maintenant !", "d'accord!", "meh..")) {
-                                            AddMagasin ajouterMagasin = new AddMagasin();
-                                            ajouterMagasin.getF().show();
-                                        }
-                                    } else if (nombreMagasins == 1) {
+                                btnMagasin.addActionListener(new ActionListener() {
+                                    @Override
+                                    public void actionPerformed(ActionEvent evt) {
                                         ConnectionRequest con = new ConnectionRequest();
-                                        con.setUrl("http://localhost/pidev2017/magasin/getListeMagasinsParUserId.php?userid=" + Login.id);
+                                        con.setUrl("http://localhost/pidev2017/magasin/getNombreMagasinParUserId.php?id=" + Login.user.getId());
                                         con.addResponseListener(new ActionListener<NetworkEvent>() {
                                             @Override
                                             public void actionPerformed(NetworkEvent evt) {
-                                                ArrayList<Lien_id_magasin> listeIdMagasins = getListLienIdMagasin(new String(con.getResponseData()));
-                                                System.out.println("bofff:" + listeIdMagasins);
+
+                                                int nombreMagasins = Integer.valueOf(new String(con.getResponseData()));
+                                                System.out.println("id: "+ Login.id);
+                                                System.out.println("nombre de magasins :" + nombreMagasins);
+                                                if (nombreMagasins == 0) {
+                                                    if (Dialog.show("Pas de magasins ?", "Créez-en un dès maintenant !", "d'accord!", "meh..")) {
+                                                        AddMagasin ajouterMagasin = new AddMagasin();
+                                                        ajouterMagasin.getF().show();
+                                                    }
+                                                } else if (nombreMagasins == 1) {
+                                                    ConnectionRequest con = new ConnectionRequest();
+                                                    con.setUrl("http://localhost/pidev2017/magasin/getListeMagasinsParUserId.php?userid=" + Login.user.getId()+"&pid="+produit.getId());
+                                                    con.addResponseListener(new ActionListener<NetworkEvent>() {
+                                                        @Override
+                                                        public void actionPerformed(NetworkEvent evt) {
+                                                            ArrayList<Lien_id_magasin> listeIdMagasins = getListLienIdMagasin(new String(con.getResponseData()));
+                                                            System.out.println("bofff:" + listeIdMagasins);
 //                                    for(Lien_id_magasin eltIdMagasain : listeIdMagasins)
 //                                    {
 //                                        
 //                                    }
-                                                AddProductToMagasin a = new AddProductToMagasin(theme, listeIdMagasins, produit);
-                                                a.getF().show();
-                                            }
-                                        });
+                                                            AddProductToMagasin a = new AddProductToMagasin(theme, listeIdMagasins, produit);
+                                                            a.getF().show();
+                                                        }
+                                                    });
 
-                                        NetworkManager.getInstance().addToQueue(con);
-                                    } else {
-                                        ConnectionRequest con = new ConnectionRequest();
-                                        con.setUrl("http://localhost/pidev2017/magasin/getListeMagasinsParUserId.php?userid=" + Login.id);
-                                        con.addResponseListener(new ActionListener<NetworkEvent>() {
-                                            @Override
-                                            public void actionPerformed(NetworkEvent evt) {
-                                                ArrayList<Lien_id_magasin> listeIdMagasins = getListLienIdMagasinMultiples(new String(con.getResponseData()));
-                                                System.out.println("bofff:" + listeIdMagasins);
+                                                    NetworkManager.getInstance().addToQueue(con);
+                                                } else {
+                                                    ConnectionRequest con = new ConnectionRequest();
+                                                    con.setUrl("http://localhost/pidev2017/magasin/getListeMagasinsParUserId.php?userid=" + Login.user.getId());
+                                                    con.addResponseListener(new ActionListener<NetworkEvent>() {
+                                                        @Override
+                                                        public void actionPerformed(NetworkEvent evt) {
+                                                            ArrayList<Lien_id_magasin> listeIdMagasins = getListLienIdMagasinMultiples(new String(con.getResponseData()));
+                                                            System.out.println("bofff:" + listeIdMagasins);
 //                                    for(Lien_id_magasin eltIdMagasain : listeIdMagasins)
 //                                    {
 //                                        
 //                                    }
-                                                AddProductToMagasin a = new AddProductToMagasin(theme, listeIdMagasins, produit);
-                                                a.getF().show();
+                                                            AddProductToMagasin a = new AddProductToMagasin(theme, listeIdMagasins, produit);
+                                                            a.getF().show();
+                                                        }
+                                                    });
+
+                                                    NetworkManager.getInstance().addToQueue(con);
+
+                                                }
                                             }
                                         });
 
                                         NetworkManager.getInstance().addToQueue(con);
-
                                     }
-                                }
-                            });
+                                });
+//                                formAffiche.add(BoxLayout.encloseX(
+//                            Acheter, Panier, btnMagasin
+//                    ));
 
-                            NetworkManager.getInstance().addToQueue(con);
-                        }
-                    });
-                                formAffiche.add(BoxLayout.encloseX(
-                            Acheter, Panier, btnMagasin
-                    ));
-                                
-                            } else{formAffiche.add(BoxLayout.encloseX(
-                            Acheter, Panier
-                    ));
-                                
+                                Container x = new Container(new GridLayout(3));
+                                x.add(Acheter);
+                                x.add(Panier);
+                                x.add(btnMagasin);
+                                formAffiche.add(x);
+
+                            } else {
+
+//                                formAffiche.add(BoxLayout.encloseX(
+//                                        Acheter, Panier
+//                                ));
+                                Container x = new Container(new GridLayout(2));
+                                x.add(Acheter);
+                                x.add(Panier);
+                                formAffiche.add(x);
+
                             }
 
                         }
@@ -194,9 +206,6 @@ public class AfficherProduit {
 
                     NetworkManager.getInstance().addToQueue(con);
 
-                    
-
-                    
                 } else {
                     container6.add(BoxLayout.encloseX(
                             new Label("Stock : Indisponible", "WelcomeRed")

@@ -263,9 +263,11 @@ public class AddMagasin {
 
                             if (s.equals("success")) {
                                 if (Dialog.show("Bien joué !", "Magasin ajouté avec succès", "Ok :-)", null)) {
-                                    HomeMagasin home = new HomeMagasin();
-                                    home.getF().show();
+                                    new Home().start();
                                 };
+                            }
+                            else{
+                                System.out.println("s: "+s);
                             }
                         }
                     });

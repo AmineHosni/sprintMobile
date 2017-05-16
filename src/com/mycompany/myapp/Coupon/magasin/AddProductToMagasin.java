@@ -23,6 +23,7 @@ import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.util.Resources;
+import com.mycompany.myapp.produit.AfficherProduit;
 import java.util.ArrayList;
 
 /**
@@ -35,8 +36,9 @@ public class AddProductToMagasin {
     Container choiceContainer;
     Container LabelIdContainer;
     ArrayList<Lien_id_magasin> newListe;
-private Resources theme;
-public void init(Object context) {
+    private Resources theme;
+
+    public void init(Object context) {
         theme = UIManager.initFirstTheme("/theme");
 
         // Enable Toolbar on all Forms by default
@@ -45,6 +47,7 @@ public void init(Object context) {
         // Pro only feature, uncomment if you have a pro subscription
         // Log.bindCrashProtection(true);
     }
+
     public AddProductToMagasin(Resources theme, ArrayList<Lien_id_magasin> liste, Produit p) {
         System.out.println("Add Product to magasin");
         f = new Form("ajouter aux ..", new BorderLayout());
@@ -52,7 +55,7 @@ public void init(Object context) {
         f.getToolbar().addCommandToLeftBar("", FontImage.createMaterial(FontImage.MATERIAL_ARROW_BACK, UIManager.getInstance().getComponentStyle("TitleCommand")), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                new AfficherProduit(theme, p).show();
+                new AfficherProduit().start(p.getId(), false);
             }
         });
         choiceContainer = new Container(new BoxLayout(BoxLayout.Y_AXIS));
@@ -65,6 +68,7 @@ public void init(Object context) {
 //            choiceContainer.add(button);
             Label labelId = new Label(String.valueOf(lien.getId()));
             CheckBox chkBx = new CheckBox(lien.getName());
+            
             //chkBx.isSelected();
             choiceContainer.add(chkBx);
             choiceContainer.setScrollableY(true);
@@ -118,7 +122,7 @@ public void init(Object context) {
 
                                     ConnectionRequest req = new ConnectionRequest();
                                     req.setUrl("http://localhost/pidev2017/magasin/insertProductIntoMagasin.php?id_magasin="
-                                            + lien.getId() + "&id_produit=" + p.getId() + "&id_user=" + Login.id);
+                                            + lien.getId() + "&id_produit=" + p.getId() + "&id_user=" + Login.user.getId());
 
                                     req.addResponseListener(new ActionListener<NetworkEvent>() {
                                         @Override
@@ -151,7 +155,7 @@ public void init(Object context) {
                     }
                 } else if (!Dialog.show("Aucun magasin choisi", "Veuillez en hoisir au moins un", "Ok", "annuler")) {
 
-                    new AfficherProduit(theme, p).show();
+                    new AfficherProduit().start(p.getId(), false);
                 }
 
             }

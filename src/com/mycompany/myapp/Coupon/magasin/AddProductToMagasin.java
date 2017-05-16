@@ -10,12 +10,14 @@ import com.codename1.io.ConnectionRequest;
 import com.codename1.io.NetworkEvent;
 import com.codename1.io.NetworkManager;
 import com.codename1.ui.Button;
+import com.codename1.ui.ButtonGroup;
 import com.codename1.ui.CheckBox;
 import com.codename1.ui.Container;
 import com.codename1.ui.Dialog;
 import com.codename1.ui.FontImage;
 import com.codename1.ui.Form;
 import com.codename1.ui.Label;
+import com.codename1.ui.RadioButton;
 import com.codename1.ui.Toolbar;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.events.ActionListener;
@@ -61,20 +63,23 @@ public class AddProductToMagasin {
         choiceContainer = new Container(new BoxLayout(BoxLayout.Y_AXIS));
         LabelIdContainer = new Container(new BoxLayout(BoxLayout.Y_AXIS));
 
+        ButtonGroup b = new ButtonGroup();
+
         newListe = new ArrayList<>();
 
         for (Lien_id_magasin lien : liste) {
 //            Button button = new Button(lien.getName());
 //            choiceContainer.add(button);
             Label labelId = new Label(String.valueOf(lien.getId()));
-            
-            CheckBox chkBx = new CheckBox(lien.getName());
-            
+
+            RadioButton rb = new RadioButton(lien.getName());
+
             //chkBx.isSelected();
-            choiceContainer.add(chkBx);
+            choiceContainer.add(rb);
             choiceContainer.setScrollableY(true);
             LabelIdContainer.add(labelId);
             LabelIdContainer.setVisible(false);
+            b.add(rb);
         }
 
         Button addToSelectedMagasinsButton = new Button("Ajouter à ces magasins");
@@ -87,73 +92,16 @@ public class AddProductToMagasin {
         addToSelectedMagasinsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                //                System.out.println(choiceContainer.getComponentAt(0));
-                for (int i = 1; i <= liste.size(); i++) {
-                    CheckBox c = (CheckBox) choiceContainer.getComponentAt(i - 1);
-                    Label l = (Label) LabelIdContainer.getComponentAt(i - 1);
-                    if (c.isSelected()) {
-                        System.out.println(c.getText() + " SELECTED ");
-                        Lien_id_magasin lien = new Lien_id_magasin(Integer.parseInt(l.getText()), c.getText());
-//                        System.out.println(lien);
-                        newListe.add(lien);
+                RadioButton rb = b.getRadioButton(b.getSelectedIndex());
 
-                    } else {
-                        System.out.println(c.getText() + " NOT SELECTED ");
+                if (rb != null) {
+                    String nomMagasin = rb.getText();
+                    
 
-                    }
+                    ConnectionRequest con = new ConnectionRequest();
+                    con.setUrl("http://localhost/pidev2017/verifierDuplicationProduitDansMagasin.php?nom_magasin="
+                            + nomMagasin+ "&id_produit=" + p.getId());
 
-                }
-                if (newListe.size() != 0) {
-                    System.out.println(newListe);
-                    System.out.println("bof");
-//                    System.out.println("taille: " + newListe.size());
-                    for (Lien_id_magasin lien : newListe) {
-                        ConnectionRequest con = new ConnectionRequest();
-                        con.setUrl("http://localhost/pidev2017/magasin/verifierDuplicationProduitDansMagasin.php?id_magasin="
-                                + lien.getId() + "&id_produit=" + p.getId());
-
-                        con.addResponseListener(new ActionListener<NetworkEvent>() {
-
-                            @Override
-                            public void actionPerformed(NetworkEvent evt) {
-
-                                int nombreProduitDansMagasin = Integer.valueOf(new String(con.getResponseData()));
-                                System.out.println("produit Id: " + p.getId() + " magasin Name: " + lien.getName() + "nombre de produit : " + nombreProduitDansMagasin);
-                                if (nombreProduitDansMagasin == 0) {
-
-                                    ConnectionRequest req = new ConnectionRequest();
-                                    req.setUrl("http://localhost/pidev2017/magasin/insertProductIntoMagasin.php?id_magasin="
-                                            + lien.getId() + "&id_produit=" + p.getId() + "&id_user=" + Login.user.getId());
-
-                                    req.addResponseListener(new ActionListener<NetworkEvent>() {
-                                        @Override
-                                        public void actionPerformed(NetworkEvent evt) {
-
-                                            System.out.println("1");
-
-                                            byte[] data = (byte[]) evt.getMetaData();
-                                            String s = new String(data);
-
-                                            if (s.equals("success")) {
-                                                if (Dialog.show("Bien joué !", "Produit ajouté au(x) magasin(s) avec succès", "Ok :-)", null)) {
-                                                    HomeMagasin home = new HomeMagasin();
-                                                    home.getF().show();
-                                                };
-                                            } else {
-                                                System.out.println("erreur magasin :" + lien.getName() + " " + s);
-                                            }
-                                        }
-                                    });
-
-                                    System.out.println("2");
-                                    NetworkManager.getInstance().addToQueue(req);
-                                }
-                            }
-                        });
-
-                        NetworkManager.getInstance().addToQueue(con);
-
-                    }
                 } else if (!Dialog.show("Aucun magasin choisi", "Veuillez en hoisir au moins un", "Ok", "annuler")) {
 
                     new AfficherProduit().start(p.getId(), false);
